@@ -1,0 +1,39 @@
+version: '3'
+
+networks:
+  backend:
+
+volumes:
+  keycloak-datastore:
+    driver: local
+
+services:
+  postgres:
+    image: postgres
+    networks:
+      - backend
+    volumes:
+      - keycloak-datastore:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    restart: unless-stopped
+  keycloak:
+    image: jboss/keycloak
+    networks:
+      - backend
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_SCHEMA: public
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: Pa55w0rd
+    ports:
+      - 8181:8080
+    depends_on:
+      - postgres
+    restart: unless-stopped
