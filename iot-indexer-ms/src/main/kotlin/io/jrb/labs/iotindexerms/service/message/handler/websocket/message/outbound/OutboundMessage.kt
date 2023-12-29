@@ -21,9 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.service.message.handler.websocket.message
+package io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound
 
-data class AuthInvalidMessage(
-    override val type: MessageType,
-    val message: String
-) : InboundMessage
+interface OutboundMessage {
+
+    val type: MessageType
+
+    enum class MessageType {
+        auth
+    }
+
+}

@@ -29,11 +29,10 @@ import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.iotindexerms.config.WebSocketServerConfig
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.service.message.handler.MessageHandler
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.AuthInvalidMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.AuthMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.AuthOkMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.AuthRequiredMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.InboundMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.AuthInvalidMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.AuthMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.AuthOkMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.AuthRequiredMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.ParsedMessage
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.springframework.web.socket.TextMessage

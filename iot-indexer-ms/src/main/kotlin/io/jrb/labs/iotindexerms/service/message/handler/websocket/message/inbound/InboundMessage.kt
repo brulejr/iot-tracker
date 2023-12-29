@@ -21,11 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.service.message.handler.websocket.message
+package io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound
 
-enum class MessageType {
-    auth,
-    auth_invalid,
-    auth_ok,
-    auth_required
+interface InboundMessage {
+
+    val type: MessageType
+
+    enum class MessageType {
+        auth_invalid,
+        auth_ok,
+        auth_required
+    }
+
 }
