@@ -30,7 +30,7 @@ import io.jrb.labs.iotindexerms.service.message.handler.MessageHandler
 import io.jrb.labs.iotindexerms.service.message.handler.mqtt.MqttClientFactory
 import io.jrb.labs.iotindexerms.service.message.handler.mqtt.MqttMessageHandler
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.WebSocketClientFactory
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.WebSocketStompMessageHandler
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.WebSocketMessageHandler
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -63,7 +63,7 @@ class ServiceJavaConfig {
 
     private fun createWebsocketMessageHandler(brokerConfig: WebSocketServerConfig, objectMapper: ObjectMapper): MessageHandler {
         val connectionFactory = WebSocketClientFactory(brokerConfig)
-        return WebSocketStompMessageHandler(brokerConfig, connectionFactory, objectMapper)
+        return WebSocketMessageHandler(brokerConfig, connectionFactory, objectMapper)
     }
 
 }

@@ -38,7 +38,7 @@ import reactor.core.publisher.Sinks
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.function.Predicate
 
-class WebSocketStompMessageHandler(
+class WebSocketMessageHandler(
     private val webSocketServerConfig: WebSocketServerConfig,
     private val webSocketClientFactory: WebSocketClientFactory,
     private val objectMapper: ObjectMapper
@@ -50,6 +50,7 @@ class WebSocketStompMessageHandler(
     private val running: AtomicBoolean = AtomicBoolean()
     private val messageSink: Sinks.Many<Message> = Sinks.many().multicast().onBackpressureBuffer()
     private var session: WebSocketSession? = null
+    private var authenticated: Boolean = false;
 
     override fun isRunning(): Boolean {
         return running.get()
@@ -102,6 +103,15 @@ class WebSocketStompMessageHandler(
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         log.info("handleTextMessage: payloadLength={}, payload={}", message.payloadLength, message.payload)
+        val messageType = extractMessageType(message.payload)
+        when (messageType) {
+            "auth_ok" -> markAuthenticated()
+            "auth_required" -> markUnauthenticated()
+            "auth_invalid" -> markUnauthenticated()
+            else -> {
+                log.info("Unknown message type {}", messageType)
+            }
+        }
     }
 
     override fun handleTransportError(session: WebSocketSession, exception: Throwable) {
@@ -111,6 +121,21 @@ class WebSocketStompMessageHandler(
     private fun authenticate(session: WebSocketSession) {
         val authMessage = objectMapper.writeValueAsString(AuthMessage(accessToken = webSocketServerConfig.accessToken))
         session.sendMessage(TextMessage(authMessage))
+    }
+
+    private fun extractMessageType(payload: String): String {
+        val json = objectMapper.readTree(payload)
+        return json.get("type").asText()
+    }
+
+    private fun markAuthenticated() {
+        authenticated = true
+        log.info("authenticated={}", authenticated)
+    }
+
+    private fun markUnauthenticated() {
+        authenticated = false
+        log.info("authenticated={}", authenticated)
     }
 
 }
