@@ -23,11 +23,8 @@
  */
 package io.jrb.labs.iotindexerms.config
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.ConstructorBinding
-
-@ConfigurationProperties(prefix = "application.brokers")
-data class MessageBrokersConfig(
-    val mqtt: Map<String, MqttBrokerConfig>,
-    val websocket: Map<String, WebSocketServerConfig>
+data class WebSocketServerConfig(
+    val brokerName: String,
+    val url: String,
+    val accessToken: String
 )

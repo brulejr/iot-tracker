@@ -23,13 +23,14 @@
  */
 package io.jrb.labs.iotindexerms.config
 
-import io.github.resilience4j.retry.Retry
-import io.github.resilience4j.retry.RetryRegistry
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.eventbus.EventLogger
 import io.jrb.labs.iotindexerms.service.message.handler.MessageHandler
 import io.jrb.labs.iotindexerms.service.message.handler.mqtt.MqttClientFactory
 import io.jrb.labs.iotindexerms.service.message.handler.mqtt.MqttMessageHandler
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.WebSocketClientFactory
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.WebSocketStompMessageHandler
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -48,13 +49,21 @@ class ServiceJavaConfig {
     fun eventLogger(eventBus: EventBus) = EventLogger(eventBus)
 
     @Bean
-    fun messageHandlers(messageBrokersConfig: MessageBrokersConfig): Map<String, MessageHandler> {
-        return messageBrokersConfig.mqtt.mapValues { createMqttMessageHandler(it.value) }
+    fun messageHandlers(messageBrokersConfig: MessageBrokersConfig, objectMapper: ObjectMapper): Map<String, MessageHandler> {
+        val mqttHandlers = messageBrokersConfig.mqtt.mapValues { createMqttMessageHandler(it.value) }
+        val websocketHandlers = messageBrokersConfig.websocket.mapValues { createWebsocketMessageHandler(it.value, objectMapper) }
+        return mqttHandlers + websocketHandlers
+
     }
 
     private fun createMqttMessageHandler(brokerConfig: MqttBrokerConfig): MessageHandler {
         val connectionFactory = MqttClientFactory(brokerConfig)
         return MqttMessageHandler(brokerConfig, connectionFactory)
+    }
+
+    private fun createWebsocketMessageHandler(brokerConfig: WebSocketServerConfig, objectMapper: ObjectMapper): MessageHandler {
+        val connectionFactory = WebSocketClientFactory(brokerConfig)
+        return WebSocketStompMessageHandler(brokerConfig, connectionFactory, objectMapper)
     }
 
 }

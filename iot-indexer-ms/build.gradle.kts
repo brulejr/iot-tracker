@@ -24,11 +24,12 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation("org.springframework.boot:spring-boot-starter-websocket")
 
 	implementation("org.springframework.cloud:spring-cloud-stream")
 	implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka-streams")
 
-	implementation("com.google.guava:guava:31.1-jre")
+	implementation("com.google.guava:guava:32.0.0-jre")
 	implementation("io.github.resilience4j:resilience4j-retry:1.7.1")
 	implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
 

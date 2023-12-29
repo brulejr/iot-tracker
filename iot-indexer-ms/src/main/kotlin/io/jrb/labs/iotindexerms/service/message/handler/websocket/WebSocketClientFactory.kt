@@ -21,13 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.iotindexerms.service.message.handler.websocket
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.ConstructorBinding
+import io.jrb.labs.common.logging.LoggerDelegate
+import io.jrb.labs.iotindexerms.config.WebSocketServerConfig
+import org.springframework.web.socket.WebSocketHandler
+import org.springframework.web.socket.WebSocketSession
+import org.springframework.web.socket.client.WebSocketClient
+import org.springframework.web.socket.client.standard.StandardWebSocketClient
 
-@ConfigurationProperties(prefix = "application.brokers")
-data class MessageBrokersConfig(
-    val mqtt: Map<String, MqttBrokerConfig>,
-    val websocket: Map<String, WebSocketServerConfig>
-)
+
+class WebSocketClientFactory(
+    private val webSocketServerConfig: WebSocketServerConfig
+) {
+
+    private val log by LoggerDelegate()
+
+    fun connect(handler: WebSocketHandler): WebSocketSession {
+        val serverUrl: String = webSocketServerConfig.url
+
+        log.info("Connecting to WebSocket server - url={}", serverUrl)
+
+        val client: WebSocketClient = StandardWebSocketClient()
+
+        return client.execute(handler, serverUrl).get()
+    }
+
+}
