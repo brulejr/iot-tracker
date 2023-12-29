@@ -23,11 +23,18 @@
  */
 package io.jrb.labs.iotindexerms.service.message.handler.websocket
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.iotindexerms.config.WebSocketServerConfig
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.service.message.handler.MessageHandler
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.AuthInvalidMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.AuthMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.AuthOkMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.AuthRequiredMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.InboundMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.ParsedMessage
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
@@ -103,13 +110,13 @@ class WebSocketMessageHandler(
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         log.info("handleTextMessage: payloadLength={}, payload={}", message.payloadLength, message.payload)
-        val messageType = extractMessageType(message.payload)
-        when (messageType) {
-            "auth_ok" -> markAuthenticated()
-            "auth_required" -> markUnauthenticated()
-            "auth_invalid" -> markUnauthenticated()
+        val pm = parseMessage(message.payload)
+        when (pm.type) {
+            "auth_ok" -> processMessage(parseMessage(pm.payload, AuthOkMessage::class.java))
+            "auth_required" -> processMessage(parseMessage(pm.payload, AuthRequiredMessage::class.java))
+            "auth_invalid" -> processMessage(parseMessage(pm.payload, AuthInvalidMessage::class.java))
             else -> {
-                log.info("Unknown message type {}", messageType)
+                log.info("Unknown message type - {}", pm.type)
             }
         }
     }
@@ -123,19 +130,29 @@ class WebSocketMessageHandler(
         session.sendMessage(TextMessage(authMessage))
     }
 
-    private fun extractMessageType(payload: String): String {
+    private fun parseMessage(payload: String): ParsedMessage {
         val json = objectMapper.readTree(payload)
-        return json.get("type").asText()
+        val type = json.get("type").asText()
+        return ParsedMessage(type, json)
     }
 
-    private fun markAuthenticated() {
+    private fun <T> parseMessage(json: JsonNode, typeClass: Class<T>): T {
+        return objectMapper.treeToValue(json, typeClass)
+    }
+
+    private fun processMessage(message: AuthOkMessage) {
         authenticated = true
-        log.info("authenticated={}", authenticated)
+        log.info("{} :: authenticated={}", message.type, authenticated)
     }
 
-    private fun markUnauthenticated() {
+    private fun processMessage(message: AuthInvalidMessage) {
         authenticated = false
-        log.info("authenticated={}", authenticated)
+        log.info("{} :: authenticated={}, message={}", message.type, authenticated, message.message)
+    }
+
+    private fun processMessage(message: AuthRequiredMessage) {
+        authenticated = false
+        log.info("{} :: authenticated={}", message.type, authenticated)
     }
 
 }
