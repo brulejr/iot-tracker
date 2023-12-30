@@ -23,16 +23,11 @@
  */
 package io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound
 
-interface InboundMessage {
+import com.fasterxml.jackson.databind.JsonNode
 
-    val type: MessageType
-
-    enum class MessageType {
-        auth_invalid,
-        auth_ok,
-        auth_required,
-        event,
-        result
-    }
-
-}
+data class ResultMessage(
+    val id: Long,
+    override val type: InboundMessage.MessageType,
+    val success: Boolean,
+    val result: JsonNode
+) : InboundMessage

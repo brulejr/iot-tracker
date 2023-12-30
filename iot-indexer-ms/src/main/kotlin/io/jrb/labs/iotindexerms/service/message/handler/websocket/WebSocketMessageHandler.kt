@@ -34,8 +34,11 @@ import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbou
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.AuthOkMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.AuthRequiredMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.ParsedMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.EventMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.ResultMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.GetConfigMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.OutboundMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.SubscribeEventsMessage
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
@@ -110,16 +113,18 @@ class WebSocketMessageHandler(
         log.info("afterConnected: session={}", session)
         authenticate(session)
         sendMessage(session, GetConfigMessage())
-        sendMessage(session, GetConfigMessage())
+        sendMessage(session, SubscribeEventsMessage(eventType = "state_changed"))
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
-        log.info("handleTextMessage: payloadLength={}, payload={}", message.payloadLength, message.payload)
+        log.debug("handleTextMessage: payloadLength={}, payload={}", message.payloadLength, message.payload)
         val pm = parseMessage(message.payload)
         when (pm.type) {
             "auth_ok" -> processMessage(parseMessage(pm.payload, AuthOkMessage::class.java))
             "auth_required" -> processMessage(parseMessage(pm.payload, AuthRequiredMessage::class.java))
             "auth_invalid" -> processMessage(parseMessage(pm.payload, AuthInvalidMessage::class.java))
+            "event" -> processMessage(parseMessage(pm.payload, EventMessage::class.java))
+            "result" -> processMessage(parseMessage(pm.payload, ResultMessage::class.java))
             else -> {
                 log.info("Unknown {} message type - payload={}", pm.type, pm.payload)
             }
@@ -158,6 +163,14 @@ class WebSocketMessageHandler(
     private fun processMessage(message: AuthRequiredMessage) {
         authenticated = false
         log.info("{} :: authenticated={}", message.type, authenticated)
+    }
+
+    private fun processMessage(message: EventMessage) {
+        log.info("{} :: event={}", message.type, message.event)
+    }
+
+    private fun processMessage(message: ResultMessage) {
+        log.info("{} :: result={}", message.type, message.result)
     }
 
     private fun <T : OutboundMessage<T>> sendMessage(session: WebSocketSession, message: T) {
