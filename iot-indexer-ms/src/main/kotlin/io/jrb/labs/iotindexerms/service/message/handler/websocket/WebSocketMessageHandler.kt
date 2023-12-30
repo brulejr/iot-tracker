@@ -35,6 +35,7 @@ import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inboun
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.AuthRequiredMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.ParsedMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.EventMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.InboundMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.ResultMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.GetConfigMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.OutboundMessage
@@ -165,12 +166,8 @@ class WebSocketMessageHandler(
         log.info("{} :: authenticated={}", message.type, authenticated)
     }
 
-    private fun processMessage(message: EventMessage) {
-        log.info("{} :: event={}", message.type, message.event)
-    }
-
-    private fun processMessage(message: ResultMessage) {
-        log.info("{} :: result={}", message.type, message.result)
+    private fun processMessage(message: InboundMessage) {
+        log.debug("{} :: message={}", message.type, message)
     }
 
     private fun <T : OutboundMessage<T>> sendMessage(session: WebSocketSession, message: T) {
