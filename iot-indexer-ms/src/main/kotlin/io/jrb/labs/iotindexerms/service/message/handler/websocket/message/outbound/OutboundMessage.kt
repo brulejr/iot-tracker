@@ -23,12 +23,17 @@
  */
 package io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound
 
-interface OutboundMessage {
+interface OutboundMessage<out T> where T: OutboundMessage<T> {
 
+    val id: Number
     val type: MessageType
 
+    fun copy(newId: Long): T
+
     enum class MessageType {
-        auth
+        auth,
+        get_config,
+        subscribe_events
     }
 
 }

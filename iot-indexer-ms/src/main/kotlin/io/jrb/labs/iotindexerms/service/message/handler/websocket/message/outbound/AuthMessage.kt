@@ -3,6 +3,6 @@ package io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbo
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class AuthMessage(
-    override val type: OutboundMessage.MessageType = OutboundMessage.MessageType.auth,
+    val type: OutboundMessage.MessageType = OutboundMessage.MessageType.auth,
     @JsonProperty("access_token") val accessToken: String
-) : OutboundMessage
+)

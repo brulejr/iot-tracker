@@ -34,6 +34,8 @@ import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbou
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.AuthOkMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.AuthRequiredMessage
 import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.ParsedMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.GetConfigMessage
+import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.OutboundMessage
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
@@ -42,6 +44,7 @@ import reactor.core.Disposable
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicLong
 import java.util.function.Predicate
 
 class WebSocketMessageHandler(
@@ -57,6 +60,7 @@ class WebSocketMessageHandler(
     private val messageSink: Sinks.Many<Message> = Sinks.many().multicast().onBackpressureBuffer()
     private var session: WebSocketSession? = null
     private var authenticated: Boolean = false;
+    private var messageId: AtomicLong = AtomicLong()
 
     override fun isRunning(): Boolean {
         return running.get()
@@ -105,6 +109,8 @@ class WebSocketMessageHandler(
     override fun afterConnectionEstablished(session: WebSocketSession) {
         log.info("afterConnected: session={}", session)
         authenticate(session)
+        sendMessage(session, GetConfigMessage())
+        sendMessage(session, GetConfigMessage())
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
@@ -115,7 +121,7 @@ class WebSocketMessageHandler(
             "auth_required" -> processMessage(parseMessage(pm.payload, AuthRequiredMessage::class.java))
             "auth_invalid" -> processMessage(parseMessage(pm.payload, AuthInvalidMessage::class.java))
             else -> {
-                log.info("Unknown message type - {}", pm.type)
+                log.info("Unknown {} message type - payload={}", pm.type, pm.payload)
             }
         }
     }
@@ -125,8 +131,8 @@ class WebSocketMessageHandler(
     }
 
     private fun authenticate(session: WebSocketSession) {
-        val authMessage = objectMapper.writeValueAsString(AuthMessage(accessToken = webSocketServerConfig.accessToken))
-        session.sendMessage(TextMessage(authMessage))
+        val json = objectMapper.writeValueAsString(AuthMessage(accessToken = webSocketServerConfig.accessToken))
+        session.sendMessage(TextMessage(json))
     }
 
     private fun parseMessage(payload: String): ParsedMessage {
@@ -152,6 +158,11 @@ class WebSocketMessageHandler(
     private fun processMessage(message: AuthRequiredMessage) {
         authenticated = false
         log.info("{} :: authenticated={}", message.type, authenticated)
+    }
+
+    private fun <T : OutboundMessage<T>> sendMessage(session: WebSocketSession, message: T) {
+        val json = objectMapper.writeValueAsString(message.copy(messageId.incrementAndGet()))
+        session.sendMessage(TextMessage(json))
     }
 
 }
