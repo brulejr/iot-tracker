@@ -33,7 +33,13 @@ interface OutboundMessage<out T> where T: OutboundMessage<T> {
     enum class MessageType {
         auth,
         get_config,
-        subscribe_events
+        get_panels,
+        get_services,
+        get_states,
+        ping,
+        subscribe_events,
+        subscribe_trigger,
+        unsubscribe_events
     }
 
 }

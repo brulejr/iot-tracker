@@ -23,17 +23,7 @@
  */
 package io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound
 
-interface InboundMessage {
-
-    val type: MessageType
-
-    enum class MessageType {
-        auth_invalid,
-        auth_ok,
-        auth_required,
-        event,
-        pong,
-        result
-    }
-
-}
+data class PongMessage(
+    val id: Long,
+    override val type: InboundMessage.MessageType
+) : InboundMessage
