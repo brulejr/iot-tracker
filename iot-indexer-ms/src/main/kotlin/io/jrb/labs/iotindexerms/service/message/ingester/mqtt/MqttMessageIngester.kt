@@ -21,14 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.service.message.handler.mqtt
+package io.jrb.labs.iotindexerms.service.message.ingester.mqtt
 
 import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.iotindexerms.config.MqttBrokerConfig
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.model.MessageType
-import io.jrb.labs.iotindexerms.service.message.handler.MessageHandler
-import io.jrb.labs.iotindexerms.service.message.ingester.MessageIngesterException
+import io.jrb.labs.iotindexerms.service.message.ingester.MessageIngester
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttClient
@@ -43,10 +42,10 @@ import reactor.core.publisher.Sinks.Many
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.function.Predicate
 
-class MqttMessageHandler(
+class MqttMessageIngester(
     private val mqttBrokerConfig: MqttBrokerConfig,
     private val mqttClientFactory: MqttClientFactory
-) : MessageHandler, MqttCallback {
+) : MessageIngester, MqttCallback {
 
     private val allNessages = Predicate { _: Message -> true }
 

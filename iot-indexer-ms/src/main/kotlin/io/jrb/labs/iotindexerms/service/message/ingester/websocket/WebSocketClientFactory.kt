@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.service.message.handler.websocket
+package io.jrb.labs.iotindexerms.service.message.ingester.websocket
 
 import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.iotindexerms.config.WebSocketServerConfig

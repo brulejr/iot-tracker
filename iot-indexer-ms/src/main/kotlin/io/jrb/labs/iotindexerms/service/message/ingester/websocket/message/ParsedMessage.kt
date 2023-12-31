@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound
+package io.jrb.labs.iotindexerms.service.message.ingester.websocket.message
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.JsonNode
 
-data class AuthOkMessage(
-    override val type: InboundMessage.MessageType,
-    @JsonProperty("ha_version") val haVersion: String
-) : InboundMessage
+data class ParsedMessage(
+    val type: String,
+    val payload: JsonNode
+)

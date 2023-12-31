@@ -21,30 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.service.message.handler.websocket
+package io.jrb.labs.iotindexerms.service.message.ingester.websocket
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.iotindexerms.config.WebSocketServerConfig
 import io.jrb.labs.iotindexerms.model.Message
-import io.jrb.labs.iotindexerms.service.message.handler.MessageHandler
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.AuthInvalidMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.AuthMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.AuthOkMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.AuthRequiredMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.ParsedMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.EventMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.InboundMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.PongMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound.ResultMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.GetConfigMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.GetPanelsMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.GetServicesMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.GetStatesMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.OutboundMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.PingMessage
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound.SubscribeEventsMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.MessageIngester
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.inbound.AuthInvalidMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.outbound.AuthMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.inbound.AuthOkMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.inbound.AuthRequiredMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.ParsedMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.inbound.EventMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.inbound.InboundMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.inbound.PongMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.inbound.ResultMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.outbound.GetConfigMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.outbound.GetPanelsMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.outbound.OutboundMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.outbound.PingMessage
+import io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.outbound.SubscribeEventsMessage
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
@@ -56,11 +54,11 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import java.util.function.Predicate
 
-class WebSocketMessageHandler(
+class WebSocketMessageIngester(
     private val webSocketServerConfig: WebSocketServerConfig,
-    private val webSocketClientFactory: WebSocketClientFactory,
+    private val webSocketClientFactory: io.jrb.labs.iotindexerms.service.message.ingester.websocket.WebSocketClientFactory,
     private val objectMapper: ObjectMapper
-) : MessageHandler, TextWebSocketHandler() {
+) : MessageIngester, TextWebSocketHandler() {
 
     private val allNessages = Predicate { _: Message -> true }
 

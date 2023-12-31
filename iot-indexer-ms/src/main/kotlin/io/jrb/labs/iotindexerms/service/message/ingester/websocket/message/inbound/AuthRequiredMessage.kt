@@ -21,25 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.service.message.handler
+package io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.inbound
 
-import io.jrb.labs.iotindexerms.model.Message
-import reactor.core.Disposable
-import reactor.core.publisher.Flux
-import java.util.function.Predicate
+import com.fasterxml.jackson.annotation.JsonProperty
 
-interface MessageHandler {
-
-    fun isRunning(): Boolean
-
-    fun stream(): Flux<Message>
-
-    fun start()
-
-    fun stop()
-
-    fun subscribe(handler: (Message) -> Unit): Disposable?
-
-    fun subscribe(filter: Predicate<Message>, handler: (Message) -> Unit): Disposable
-
-}
+data class AuthRequiredMessage(
+    override val type: InboundMessage.MessageType,
+    @JsonProperty("ha_version") val haVersion: String
+) : InboundMessage

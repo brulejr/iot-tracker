@@ -21,25 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound
+package io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.inbound
 
-interface OutboundMessage<out T> where T: OutboundMessage<T> {
+interface InboundMessage {
 
-    val id: Number
     val type: MessageType
 
-    fun copy(newId: Long): T
-
     enum class MessageType {
-        auth,
-        get_config,
-        get_panels,
-        get_services,
-        get_states,
-        ping,
-        subscribe_events,
-        subscribe_trigger,
-        unsubscribe_events
+        auth_invalid,
+        auth_ok,
+        auth_required,
+        event,
+        pong,
+        result
     }
 
 }

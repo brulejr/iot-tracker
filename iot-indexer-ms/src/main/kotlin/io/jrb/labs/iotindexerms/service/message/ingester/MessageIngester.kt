@@ -21,9 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.service.message.handler.websocket.message.inbound
+package io.jrb.labs.iotindexerms.service.message.ingester
 
-data class AuthInvalidMessage(
-    override val type: InboundMessage.MessageType,
-    val message: String
-) : InboundMessage
+import io.jrb.labs.iotindexerms.model.Message
+import reactor.core.Disposable
+import reactor.core.publisher.Flux
+import java.util.function.Predicate
+
+interface MessageIngester {
+
+    fun isRunning(): Boolean
+
+    fun stream(): Flux<Message>
+
+    fun start()
+
+    fun stop()
+
+    fun subscribe(handler: (Message) -> Unit): Disposable?
+
+    fun subscribe(filter: Predicate<Message>, handler: (Message) -> Unit): Disposable
+
+}

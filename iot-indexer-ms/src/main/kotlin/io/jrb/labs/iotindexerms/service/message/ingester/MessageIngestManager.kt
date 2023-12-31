@@ -29,7 +29,6 @@ import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.iotindexerms.config.MessageBrokersConfig
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.model.MessageEvent
-import io.jrb.labs.iotindexerms.service.message.handler.MessageHandlerManager
 
 import org.springframework.context.SmartLifecycle
 import org.springframework.stereotype.Service
@@ -38,7 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @Service
 class MessageIngestManager(
     private val messageBrokersConfig: MessageBrokersConfig,
-    private val messageHandlerManager: MessageHandlerManager,
+    private val messageIngesterManager: MessageIngesterManager,
     private val eventBus: EventBus
 ) : SmartLifecycle {
 
@@ -49,14 +48,14 @@ class MessageIngestManager(
 
     override fun start() {
         log.info("Starting {}...", _serviceName)
-        messageHandlerManager.subscribe { name, message -> processMessage(name, message) }
+        messageIngesterManager.subscribe { name, message -> processMessage(name, message) }
         eventBus.sendEvent(SystemEvent("service.start", _serviceName))
         _running.getAndSet(true)
     }
 
     override fun stop() {
         log.info("Stopping {}...", _serviceName)
-        messageHandlerManager.dispose()
+        messageIngesterManager.dispose()
         eventBus.sendEvent(SystemEvent("service.stop", _serviceName))
         _running.getAndSet(true)
     }

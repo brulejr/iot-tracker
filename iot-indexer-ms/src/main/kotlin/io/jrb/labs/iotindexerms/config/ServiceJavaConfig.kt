@@ -26,11 +26,9 @@ package io.jrb.labs.iotindexerms.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.eventbus.EventLogger
-import io.jrb.labs.iotindexerms.service.message.handler.MessageHandler
-import io.jrb.labs.iotindexerms.service.message.handler.mqtt.MqttClientFactory
-import io.jrb.labs.iotindexerms.service.message.handler.mqtt.MqttMessageHandler
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.WebSocketClientFactory
-import io.jrb.labs.iotindexerms.service.message.handler.websocket.WebSocketMessageHandler
+import io.jrb.labs.iotindexerms.service.message.ingester.MessageIngester
+import io.jrb.labs.iotindexerms.service.message.ingester.mqtt.MqttClientFactory
+import io.jrb.labs.iotindexerms.service.message.ingester.mqtt.MqttMessageIngester
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -49,21 +47,26 @@ class ServiceJavaConfig {
     fun eventLogger(eventBus: EventBus) = EventLogger(eventBus)
 
     @Bean
-    fun messageHandlers(messageBrokersConfig: MessageBrokersConfig, objectMapper: ObjectMapper): Map<String, MessageHandler> {
+    fun messageHandlers(messageBrokersConfig: MessageBrokersConfig, objectMapper: ObjectMapper): Map<String, MessageIngester> {
         val mqttHandlers = messageBrokersConfig.mqtt.mapValues { createMqttMessageHandler(it.value) }
         val websocketHandlers = messageBrokersConfig.websocket.mapValues { createWebsocketMessageHandler(it.value, objectMapper) }
         return mqttHandlers + websocketHandlers
 
     }
 
-    private fun createMqttMessageHandler(brokerConfig: MqttBrokerConfig): MessageHandler {
+    private fun createMqttMessageHandler(brokerConfig: MqttBrokerConfig): MessageIngester {
         val connectionFactory = MqttClientFactory(brokerConfig)
-        return MqttMessageHandler(brokerConfig, connectionFactory)
+        return MqttMessageIngester(brokerConfig, connectionFactory)
     }
 
-    private fun createWebsocketMessageHandler(brokerConfig: WebSocketServerConfig, objectMapper: ObjectMapper): MessageHandler {
-        val connectionFactory = WebSocketClientFactory(brokerConfig)
-        return WebSocketMessageHandler(brokerConfig, connectionFactory, objectMapper)
+    private fun createWebsocketMessageHandler(brokerConfig: WebSocketServerConfig, objectMapper: ObjectMapper): MessageIngester {
+        val connectionFactory =
+            io.jrb.labs.iotindexerms.service.message.ingester.websocket.WebSocketClientFactory(brokerConfig)
+        return io.jrb.labs.iotindexerms.service.message.ingester.websocket.WebSocketMessageIngester(
+            brokerConfig,
+            connectionFactory,
+            objectMapper
+        )
     }
 
 }

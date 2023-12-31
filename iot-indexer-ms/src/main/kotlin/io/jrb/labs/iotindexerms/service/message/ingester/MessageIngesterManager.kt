@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.service.message.handler
+package io.jrb.labs.iotindexerms.service.message.ingester
 
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.eventbus.SystemEvent
@@ -40,9 +40,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.function.Predicate
 
 @Service
-class MessageHandlerManager(
+class MessageIngesterManager(
     private val messageBrokersConfig: MessageBrokersConfig,
-    private val messageHandlers: Map<String, MessageHandler>,
+    private val messageHandlers: Map<String, MessageIngester>,
     private val eventBus: EventBus
 ) : SmartLifecycle {
 
@@ -76,8 +76,8 @@ class MessageHandlerManager(
         log.info("Starting {}...", _serviceName)
         messageHandlers.forEach {
             _scope.launch {
-                val messageHandler: MessageHandler = it.value
-                messageHandler.start()
+                val messageIngester: MessageIngester = it.value
+                messageIngester.start()
             }
         }
         eventBus.sendEvent(SystemEvent("service.start", _serviceName))

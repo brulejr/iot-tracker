@@ -1,4 +1,4 @@
-package io.jrb.labs.iotindexerms.service.message.handler.websocket.message.outbound
+package io.jrb.labs.iotindexerms.service.message.ingester.websocket.message.outbound
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
