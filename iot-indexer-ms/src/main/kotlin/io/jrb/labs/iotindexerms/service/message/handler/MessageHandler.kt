@@ -32,8 +32,6 @@ interface MessageHandler {
 
     fun isRunning(): Boolean
 
-    fun publish(message: Message)
-
     fun stream(): Flux<Message>
 
     fun start()
@@ -42,6 +40,6 @@ interface MessageHandler {
 
     fun subscribe(handler: (Message) -> Unit): Disposable?
 
-    fun subscribe(filter: Predicate<Message>, handler: (Message) -> Unit): Disposable?
+    fun subscribe(filter: Predicate<Message>, handler: (Message) -> Unit): Disposable
 
 }

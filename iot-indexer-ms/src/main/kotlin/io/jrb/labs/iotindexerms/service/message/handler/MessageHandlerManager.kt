@@ -72,10 +72,6 @@ class MessageHandlerManager(
         return _running.get()
     }
 
-    fun publish(name: String, message: Message) {
-        messageHandlers.get(name)?.publish(message)
-    }
-
     override fun start() {
         log.info("Starting {}...", _serviceName)
         messageHandlers.forEach {

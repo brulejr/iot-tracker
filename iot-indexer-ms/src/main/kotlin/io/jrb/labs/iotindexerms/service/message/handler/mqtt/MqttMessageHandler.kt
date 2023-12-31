@@ -55,27 +55,15 @@ class MqttMessageHandler(
     private val messageSink: Many<Message> = Sinks.many().multicast().onBackpressureBuffer()
     private var mqttClient: MqttClient? = null
 
-    override fun publish(message: Message) {
-        try {
-            val mqttMessage = MqttMessage(message.payload.toByteArray())
-            mqttMessage.qos = mqttBrokerConfig.qos
-            mqttMessage.isRetained = false
-            mqttClient!!.publish(message.topic, mqttMessage)
-        } catch (e: MqttException) {
-            log.error("Unable to publish message due to an exception - message={}", message, e)
-            throw MessageIngesterException(e.message, e)
-        }
-    }
-
     override fun stream(): Flux<Message> {
         return messageSink.asFlux()
     }
 
-    override fun subscribe(handler: (Message) -> Unit): Disposable? {
+    override fun subscribe(handler: (Message) -> Unit): Disposable {
         return subscribe(allNessages, handler)
     }
 
-    override fun subscribe(filter: Predicate<Message>, handler: (Message) -> Unit): Disposable? {
+    override fun subscribe(filter: Predicate<Message>, handler: (Message) -> Unit): Disposable {
         return messageSink.asFlux()
             .filter(filter)
             .subscribe(handler)

@@ -75,10 +75,6 @@ class WebSocketMessageHandler(
         return running.get()
     }
 
-    override fun publish(message: Message) {
-        TODO("Not yet implemented")
-    }
-
     override fun stream(): Flux<Message> {
         return messageSink.asFlux()
     }
@@ -105,11 +101,11 @@ class WebSocketMessageHandler(
         }
     }
 
-    override fun subscribe(handler: (Message) -> Unit): Disposable? {
+    override fun subscribe(handler: (Message) -> Unit): Disposable {
         return subscribe(allNessages, handler)
     }
 
-    override fun subscribe(filter: Predicate<Message>, handler: (Message) -> Unit): Disposable? {
+    override fun subscribe(filter: Predicate<Message>, handler: (Message) -> Unit): Disposable {
         return messageSink.asFlux()
             .filter(filter)
             .subscribe(handler)
