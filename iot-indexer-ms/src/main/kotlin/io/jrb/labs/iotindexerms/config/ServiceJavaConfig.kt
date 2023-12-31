@@ -26,9 +26,11 @@ package io.jrb.labs.iotindexerms.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.eventbus.EventLogger
-import io.jrb.labs.iotindexerms.service.message.ingester.MessageIngester
-import io.jrb.labs.iotindexerms.service.message.ingester.mqtt.MqttClientFactory
-import io.jrb.labs.iotindexerms.service.message.ingester.mqtt.MqttMessageIngester
+import io.jrb.labs.iotindexerms.service.ingester.MessageIngester
+import io.jrb.labs.iotindexerms.service.ingester.mqtt.MqttClientFactory
+import io.jrb.labs.iotindexerms.service.ingester.mqtt.MqttMessageIngester
+import io.jrb.labs.iotindexerms.service.ingester.websocket.WebSocketClientFactory
+import io.jrb.labs.iotindexerms.service.ingester.websocket.WebSocketMessageIngester
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -60,9 +62,8 @@ class ServiceJavaConfig {
     }
 
     private fun createWebsocketMessageHandler(brokerConfig: WebSocketServerConfig, objectMapper: ObjectMapper): MessageIngester {
-        val connectionFactory =
-            io.jrb.labs.iotindexerms.service.message.ingester.websocket.WebSocketClientFactory(brokerConfig)
-        return io.jrb.labs.iotindexerms.service.message.ingester.websocket.WebSocketMessageIngester(
+        val connectionFactory = WebSocketClientFactory(brokerConfig)
+        return WebSocketMessageIngester(
             brokerConfig,
             connectionFactory,
             objectMapper
