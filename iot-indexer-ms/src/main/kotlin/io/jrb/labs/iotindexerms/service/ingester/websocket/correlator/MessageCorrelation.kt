@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Jon Brule <brulejr@gmail.com>
+ * Copyright (c) 2024 Jon Brule <brulejr@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,12 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound
+package io.jrb.labs.iotindexerms.service.ingester.websocket.correlator
 
-import com.fasterxml.jackson.databind.JsonNode
+import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.InboundMessage
+import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.OutboundMessage
 
-data class EventMessage(
-    override val id: Long,
-    override val type: InboundMessage.MessageType,
-    val event: JsonNode
-) : InboundMessage
+data class MessageCorrelation(
+    val id: Number?,
+    val type: OutboundMessage.MessageType?,
+    val inbound: InboundMessage
+)

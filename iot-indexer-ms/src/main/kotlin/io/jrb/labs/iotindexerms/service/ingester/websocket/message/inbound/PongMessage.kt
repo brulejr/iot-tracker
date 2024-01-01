@@ -24,6 +24,6 @@
 package io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound
 
 data class PongMessage(
-    val id: Long,
+    override val id: Long,
     override val type: InboundMessage.MessageType
 ) : InboundMessage

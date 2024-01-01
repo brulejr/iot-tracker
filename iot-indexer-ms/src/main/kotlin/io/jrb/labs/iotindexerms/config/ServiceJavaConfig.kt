@@ -31,6 +31,7 @@ import io.jrb.labs.iotindexerms.service.ingester.mqtt.MqttClientFactory
 import io.jrb.labs.iotindexerms.service.ingester.mqtt.MqttMessageIngester
 import io.jrb.labs.iotindexerms.service.ingester.websocket.WebSocketClientFactory
 import io.jrb.labs.iotindexerms.service.ingester.websocket.WebSocketMessageIngester
+import io.jrb.labs.iotindexerms.service.ingester.websocket.correlator.WebSocketMessageCorrelator
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -49,9 +50,13 @@ class ServiceJavaConfig {
     fun eventLogger(eventBus: EventBus) = EventLogger(eventBus)
 
     @Bean
-    fun messageHandlers(messageBrokersConfig: MessageBrokersConfig, objectMapper: ObjectMapper): Map<String, MessageIngester> {
+    fun messageHandlers(
+        messageBrokersConfig: MessageBrokersConfig,
+        correlator: WebSocketMessageCorrelator,
+        objectMapper: ObjectMapper
+    ): Map<String, MessageIngester> {
         val mqttHandlers = messageBrokersConfig.mqtt.mapValues { createMqttMessageHandler(it.value) }
-        val websocketHandlers = messageBrokersConfig.websocket.mapValues { createWebsocketMessageHandler(it.value, objectMapper) }
+        val websocketHandlers = messageBrokersConfig.websocket.mapValues { createWebsocketMessageHandler(it.value, correlator, objectMapper) }
         return mqttHandlers + websocketHandlers
 
     }
@@ -61,11 +66,16 @@ class ServiceJavaConfig {
         return MqttMessageIngester(brokerConfig, connectionFactory)
     }
 
-    private fun createWebsocketMessageHandler(brokerConfig: WebSocketServerConfig, objectMapper: ObjectMapper): MessageIngester {
+    private fun createWebsocketMessageHandler(
+        brokerConfig: WebSocketServerConfig,
+        correlator: WebSocketMessageCorrelator,
+        objectMapper: ObjectMapper
+    ): MessageIngester {
         val connectionFactory = WebSocketClientFactory(brokerConfig)
         return WebSocketMessageIngester(
             brokerConfig,
             connectionFactory,
+            correlator,
             objectMapper
         )
     }

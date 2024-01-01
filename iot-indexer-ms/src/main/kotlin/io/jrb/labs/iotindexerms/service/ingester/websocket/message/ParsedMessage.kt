@@ -26,6 +26,7 @@ package io.jrb.labs.iotindexerms.service.ingester.websocket.message
 import com.fasterxml.jackson.databind.JsonNode
 
 data class ParsedMessage(
+    val id: Number?,
     val type: String,
     val payload: JsonNode
 )

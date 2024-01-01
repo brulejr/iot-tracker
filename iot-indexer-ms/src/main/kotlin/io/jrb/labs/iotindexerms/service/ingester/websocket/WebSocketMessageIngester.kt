@@ -23,21 +23,15 @@
  */
 package io.jrb.labs.iotindexerms.service.ingester.websocket
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.iotindexerms.config.WebSocketServerConfig
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.service.ingester.MessageIngester
-import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.AuthInvalidMessage
-import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.AuthMessage
-import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.AuthOkMessage
-import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.AuthRequiredMessage
+import io.jrb.labs.iotindexerms.service.ingester.websocket.correlator.WebSocketMessageCorrelator
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.ParsedMessage
-import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.EventMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.InboundMessage
-import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.PongMessage
-import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.ResultMessage
+import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.AuthMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.GetConfigMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.GetPanelsMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.OutboundMessage
@@ -54,9 +48,11 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 import java.util.function.Predicate
 
-class WebSocketMessageIngester(
+class
+WebSocketMessageIngester(
     private val webSocketServerConfig: WebSocketServerConfig,
     private val webSocketClientFactory: WebSocketClientFactory,
+    private val webSocketMessageCorrelator: WebSocketMessageCorrelator,
     private val objectMapper: ObjectMapper
 ) : MessageIngester, TextWebSocketHandler() {
 
@@ -66,7 +62,6 @@ class WebSocketMessageIngester(
     private val running: AtomicBoolean = AtomicBoolean()
     private val messageSink: Sinks.Many<Message> = Sinks.many().multicast().onBackpressureBuffer()
     private var session: WebSocketSession? = null
-    private var authenticated: Boolean = false;
     private var messageId: AtomicLong = AtomicLong()
 
     override fun isRunning(): Boolean {
@@ -120,18 +115,9 @@ class WebSocketMessageIngester(
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         log.debug("handleTextMessage: payloadLength={}, payload={}", message.payloadLength, message.payload)
-        val pm = parseMessage(message.payload)
-        when (pm.type) {
-            "auth_ok" -> processMessage(parseMessage(pm.payload, AuthOkMessage::class.java))
-            "auth_required" -> processMessage(parseMessage(pm.payload, AuthRequiredMessage::class.java))
-            "auth_invalid" -> processMessage(parseMessage(pm.payload, AuthInvalidMessage::class.java))
-            "event" -> processMessage(parseMessage(pm.payload, EventMessage::class.java))
-            "pong" -> processMessage(parseMessage(pm.payload, PongMessage::class.java))
-            "result" -> processMessage(parseMessage(pm.payload, ResultMessage::class.java))
-            else -> {
-                log.info("Unknown {} message type - payload={}", pm.type, pm.payload)
-            }
-        }
+        val pim = parseMessage(message.payload)
+        val mc = webSocketMessageCorrelator.correlateInboundMessage(pim)
+        processMessage(mc.inbound)
     }
 
     override fun handleTransportError(session: WebSocketSession, exception: Throwable) {
@@ -145,27 +131,9 @@ class WebSocketMessageIngester(
 
     private fun parseMessage(payload: String): ParsedMessage {
         val json = objectMapper.readTree(payload)
+        val id = json.get("id")?.asLong()
         val type = json.get("type").asText()
-        return ParsedMessage(type, json)
-    }
-
-    private fun <T> parseMessage(json: JsonNode, typeClass: Class<T>): T {
-        return objectMapper.treeToValue(json, typeClass)
-    }
-
-    private fun processMessage(message: AuthOkMessage) {
-        authenticated = true
-        log.info("{} :: authenticated={}", message.type, authenticated)
-    }
-
-    private fun processMessage(message: AuthInvalidMessage) {
-        authenticated = false
-        log.info("{} :: authenticated={}, message={}", message.type, authenticated, message.message)
-    }
-
-    private fun processMessage(message: AuthRequiredMessage) {
-        authenticated = false
-        log.info("{} :: authenticated={}", message.type, authenticated)
+        return ParsedMessage(id, type, json)
     }
 
     private fun processMessage(message: InboundMessage) {
@@ -173,6 +141,7 @@ class WebSocketMessageIngester(
     }
 
     private fun <T : OutboundMessage<T>> sendMessage(session: WebSocketSession, message: T) {
+        webSocketMessageCorrelator.registerOutboundMessage(message)
         val json = objectMapper.writeValueAsString(message.copy(messageId.incrementAndGet()))
         session.sendMessage(TextMessage(json))
     }

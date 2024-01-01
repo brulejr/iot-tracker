@@ -25,6 +25,9 @@ package io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound
 
 interface InboundMessage {
 
+    val id: Number?
+        get() = null
+
     val type: MessageType
 
     enum class MessageType {

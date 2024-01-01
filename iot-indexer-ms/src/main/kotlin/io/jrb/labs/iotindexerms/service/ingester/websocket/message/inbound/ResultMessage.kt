@@ -26,7 +26,7 @@ package io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound
 import com.fasterxml.jackson.databind.JsonNode
 
 data class ResultMessage(
-    val id: Long,
+    override val id: Long,
     override val type: InboundMessage.MessageType,
     val success: Boolean,
     val result: JsonNode
