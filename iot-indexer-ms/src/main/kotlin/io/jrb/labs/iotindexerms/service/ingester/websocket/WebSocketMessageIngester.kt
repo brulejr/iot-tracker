@@ -28,15 +28,16 @@ import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.iotindexerms.config.WebSocketServerConfig
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.service.ingester.MessageIngester
+import io.jrb.labs.iotindexerms.service.ingester.websocket.correlator.MessageCorrelation
 import io.jrb.labs.iotindexerms.service.ingester.websocket.correlator.WebSocketMessageCorrelator
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.ParsedMessage
-import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.InboundMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.AuthMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.GetConfigMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.GetPanelsMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.OutboundMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.PingMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.SubscribeEventsMessage
+import io.jrb.labs.iotindexerms.service.ingester.websocket.processor.MessageProcessor
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
@@ -53,6 +54,7 @@ WebSocketMessageIngester(
     private val webSocketServerConfig: WebSocketServerConfig,
     private val webSocketClientFactory: WebSocketClientFactory,
     private val webSocketMessageCorrelator: WebSocketMessageCorrelator,
+    private val messageProcessors: Map<String, MessageProcessor>,
     private val objectMapper: ObjectMapper
 ) : MessageIngester, TextWebSocketHandler() {
 
@@ -67,6 +69,7 @@ WebSocketMessageIngester(
     override fun isRunning(): Boolean {
         return running.get()
     }
+    
 
     override fun stream(): Flux<Message> {
         return messageSink.asFlux()
@@ -117,7 +120,8 @@ WebSocketMessageIngester(
         log.debug("handleTextMessage: payloadLength={}, payload={}", message.payloadLength, message.payload)
         val pim = parseMessage(message.payload)
         val mc = webSocketMessageCorrelator.correlateInboundMessage(pim)
-        processMessage(mc.inbound)
+        val mp = findMessageProcessor(mc)
+        mp.processMessage(mc.inbound)
     }
 
     override fun handleTransportError(session: WebSocketSession, exception: Throwable) {
@@ -129,15 +133,15 @@ WebSocketMessageIngester(
         session.sendMessage(TextMessage(json))
     }
 
+    private fun findMessageProcessor(messageCorrelation: MessageCorrelation): MessageProcessor {
+        return messageProcessors["inboundMessageProcessor"]!!
+    }
+
     private fun parseMessage(payload: String): ParsedMessage {
         val json = objectMapper.readTree(payload)
         val id = json.get("id")?.asLong()
         val type = json.get("type").asText()
         return ParsedMessage(id, type, json)
-    }
-
-    private fun processMessage(message: InboundMessage) {
-        log.info("{} :: message={}", message.type, message)
     }
 
     private fun <T : OutboundMessage<T>> sendMessage(session: WebSocketSession, message: T) {

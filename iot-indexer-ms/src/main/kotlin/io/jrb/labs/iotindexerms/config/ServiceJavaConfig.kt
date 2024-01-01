@@ -32,6 +32,7 @@ import io.jrb.labs.iotindexerms.service.ingester.mqtt.MqttMessageIngester
 import io.jrb.labs.iotindexerms.service.ingester.websocket.WebSocketClientFactory
 import io.jrb.labs.iotindexerms.service.ingester.websocket.WebSocketMessageIngester
 import io.jrb.labs.iotindexerms.service.ingester.websocket.correlator.WebSocketMessageCorrelator
+import io.jrb.labs.iotindexerms.service.ingester.websocket.processor.MessageProcessor
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -53,12 +54,14 @@ class ServiceJavaConfig {
     fun messageHandlers(
         messageBrokersConfig: MessageBrokersConfig,
         correlator: WebSocketMessageCorrelator,
+        messageProcessors: Map<String, MessageProcessor>,
         objectMapper: ObjectMapper
     ): Map<String, MessageIngester> {
         val mqttHandlers = messageBrokersConfig.mqtt.mapValues { createMqttMessageHandler(it.value) }
-        val websocketHandlers = messageBrokersConfig.websocket.mapValues { createWebsocketMessageHandler(it.value, correlator, objectMapper) }
+        val websocketHandlers = messageBrokersConfig.websocket.mapValues {
+            createWebsocketMessageHandler(it.value, correlator, messageProcessors, objectMapper)
+        }
         return mqttHandlers + websocketHandlers
-
     }
 
     private fun createMqttMessageHandler(brokerConfig: MqttBrokerConfig): MessageIngester {
@@ -69,6 +72,7 @@ class ServiceJavaConfig {
     private fun createWebsocketMessageHandler(
         brokerConfig: WebSocketServerConfig,
         correlator: WebSocketMessageCorrelator,
+        messageProcessors: Map<String, MessageProcessor>,
         objectMapper: ObjectMapper
     ): MessageIngester {
         val connectionFactory = WebSocketClientFactory(brokerConfig)
@@ -76,6 +80,7 @@ class ServiceJavaConfig {
             brokerConfig,
             connectionFactory,
             correlator,
+            messageProcessors,
             objectMapper
         )
     }
