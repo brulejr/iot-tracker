@@ -69,7 +69,7 @@ WebSocketMessageIngester(
     override fun isRunning(): Boolean {
         return running.get()
     }
-    
+
 
     override fun stream(): Flux<Message> {
         return messageSink.asFlux()
@@ -134,7 +134,10 @@ WebSocketMessageIngester(
     }
 
     private fun findMessageProcessor(messageCorrelation: MessageCorrelation): MessageProcessor {
-        return messageProcessors["inboundMessageProcessor"]!!
+        val processorKey = "${messageCorrelation.inbound.javaClass.simpleName}Processor".replaceFirstChar {
+            it.lowercase()
+        }
+        return messageProcessors.getOrDefault(processorKey, messageProcessors["inboundMessageProcessor"]!!)
     }
 
     private fun parseMessage(payload: String): ParsedMessage {

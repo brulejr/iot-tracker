@@ -42,7 +42,8 @@ import reactor.core.publisher.Sinks.Many
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.function.Predicate
 
-class MqttMessageIngester(
+class
+MqttMessageIngester(
     private val mqttBrokerConfig: MqttBrokerConfig,
     private val mqttClientFactory: io.jrb.labs.iotindexerms.service.ingester.mqtt.MqttClientFactory
 ) : MessageIngester, MqttCallback {

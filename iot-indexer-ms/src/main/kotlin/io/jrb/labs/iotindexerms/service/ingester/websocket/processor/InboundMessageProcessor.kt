@@ -32,8 +32,8 @@ class InboundMessageProcessor : MessageProcessor {
 
     private val log by LoggerDelegate()
 
-    override fun processMessage(inboundMessage: InboundMessage) {
-        log.info("{} :: message={}", inboundMessage.type, inboundMessage)
+    override fun processMessage(message: InboundMessage) {
+        log.info("{} :: message={}", message.type, message)
     }
 
 }

@@ -23,10 +23,18 @@
  */
 package io.jrb.labs.iotindexerms.service.ingester.websocket.processor
 
+import io.jrb.labs.common.logging.LoggerDelegate
+import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.EventMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.InboundMessage
+import org.springframework.stereotype.Service
 
-interface MessageProcessor {
+@Service
+class EventMessageProcessor : MessageProcessor {
 
-    fun processMessage(message: InboundMessage)
+    private val log by LoggerDelegate()
+
+    override fun processMessage(message: InboundMessage) {
+        log.info("{} :: message={}", message.type, message)
+    }
 
 }
