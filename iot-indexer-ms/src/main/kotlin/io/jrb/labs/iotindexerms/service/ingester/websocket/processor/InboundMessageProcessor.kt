@@ -24,6 +24,7 @@
 package io.jrb.labs.iotindexerms.service.ingester.websocket.processor
 
 import io.jrb.labs.common.logging.LoggerDelegate
+import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.InboundMessage
 import org.springframework.stereotype.Service
 
@@ -32,8 +33,9 @@ class InboundMessageProcessor : MessageProcessor {
 
     private val log by LoggerDelegate()
 
-    override fun processMessage(message: InboundMessage) {
+    override fun processMessage(message: InboundMessage): Message? {
         log.info("{} :: message={}", message.type, message)
+        return null
     }
 
 }

@@ -44,6 +44,7 @@ import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import reactor.core.Disposable
 import reactor.core.publisher.Flux
+import reactor.core.publisher.SignalType
 import reactor.core.publisher.Sinks
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
@@ -121,7 +122,12 @@ WebSocketMessageIngester(
         val pim = parseMessage(message.payload)
         val mc = webSocketMessageCorrelator.correlateInboundMessage(pim)
         val mp = findMessageProcessor(mc)
-        mp.processMessage(mc.inbound)
+        mp.processMessage(mc.inbound)?.let {
+            messageSink.emitNext(it) { _: SignalType?, _: Sinks.EmitResult? ->
+                log.debug("Unable to emit message - {}", message)
+                false
+            }
+        }
     }
 
     override fun handleTransportError(session: WebSocketSession, exception: Throwable) {
@@ -134,9 +140,8 @@ WebSocketMessageIngester(
     }
 
     private fun findMessageProcessor(messageCorrelation: MessageCorrelation): MessageProcessor {
-        val processorKey = "${messageCorrelation.inbound.javaClass.simpleName}Processor".replaceFirstChar {
-            it.lowercase()
-        }
+        val processorKey =
+            "${messageCorrelation.inbound.javaClass.simpleName}Processor".replaceFirstChar { it.lowercase() }
         return messageProcessors.getOrDefault(processorKey, messageProcessors["inboundMessageProcessor"]!!)
     }
 
