@@ -29,7 +29,7 @@ import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.Inbou
 import org.springframework.stereotype.Service
 
 @Service
-class InboundMessageProcessor : MessageProcessor {
+class InboundMessageProcessor : MessageProcessor<InboundMessage> {
 
     private val log by LoggerDelegate()
 

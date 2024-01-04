@@ -31,6 +31,7 @@ import io.jrb.labs.iotindexerms.service.ingester.MessageIngester
 import io.jrb.labs.iotindexerms.service.ingester.websocket.correlator.MessageCorrelation
 import io.jrb.labs.iotindexerms.service.ingester.websocket.correlator.WebSocketMessageCorrelator
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.ParsedMessage
+import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.InboundMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.AuthMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.GetConfigMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.outbound.GetPanelsMessage
@@ -55,7 +56,7 @@ WebSocketMessageIngester(
     private val webSocketServerConfig: WebSocketServerConfig,
     private val webSocketClientFactory: WebSocketClientFactory,
     private val webSocketMessageCorrelator: WebSocketMessageCorrelator,
-    private val messageProcessors: Map<String, MessageProcessor>,
+    private val messageProcessors: Map<String, MessageProcessor<*>>,
     private val objectMapper: ObjectMapper
 ) : MessageIngester, TextWebSocketHandler() {
 
@@ -121,7 +122,7 @@ WebSocketMessageIngester(
         log.debug("handleTextMessage: payloadLength={}, payload={}", message.payloadLength, message.payload)
         val pim = parseMessage(message.payload)
         val mc = webSocketMessageCorrelator.correlateInboundMessage(pim)
-        val mp = findMessageProcessor(mc)
+        val mp = findMessageProcessor(mc.inbound)
         mp.processMessage(mc.inbound)?.let {
             messageSink.emitNext(it) { _: SignalType?, _: Sinks.EmitResult? ->
                 log.debug("Unable to emit message - {}", message)
@@ -139,10 +140,14 @@ WebSocketMessageIngester(
         session.sendMessage(TextMessage(json))
     }
 
-    private fun findMessageProcessor(messageCorrelation: MessageCorrelation): MessageProcessor {
-        val processorKey =
-            "${messageCorrelation.inbound.javaClass.simpleName}Processor".replaceFirstChar { it.lowercase() }
-        return messageProcessors.getOrDefault(processorKey, messageProcessors["inboundMessageProcessor"]!!)
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> findMessageProcessor(inboundMessage: T): MessageProcessor<T>  where T: InboundMessage {
+        val processorKey = "${inboundMessage.javaClass.simpleName}Processor".replaceFirstChar { it.lowercase() }
+        return if (messageProcessors.containsKey(processorKey)) {
+            messageProcessors[processorKey] as MessageProcessor<T>
+        } else {
+            messageProcessors["inboundMessageProcessor"] as MessageProcessor<InboundMessage>
+        }
     }
 
     private fun parseMessage(payload: String): ParsedMessage {

@@ -32,6 +32,7 @@ import io.jrb.labs.iotindexerms.service.ingester.mqtt.MqttMessageIngester
 import io.jrb.labs.iotindexerms.service.ingester.websocket.WebSocketClientFactory
 import io.jrb.labs.iotindexerms.service.ingester.websocket.WebSocketMessageIngester
 import io.jrb.labs.iotindexerms.service.ingester.websocket.correlator.WebSocketMessageCorrelator
+import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.InboundMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.processor.MessageProcessor
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -54,7 +55,7 @@ class ServiceJavaConfig {
     fun messageHandlers(
         messageBrokersConfig: MessageBrokersConfig,
         correlator: WebSocketMessageCorrelator,
-        messageProcessors: Map<String, MessageProcessor>,
+        messageProcessors: Map<String, MessageProcessor<*>>,
         objectMapper: ObjectMapper
     ): Map<String, MessageIngester> {
         val mqttHandlers = messageBrokersConfig.mqtt.mapValues { createMqttMessageHandler(it.value) }
@@ -72,7 +73,7 @@ class ServiceJavaConfig {
     private fun createWebsocketMessageHandler(
         brokerConfig: WebSocketServerConfig,
         correlator: WebSocketMessageCorrelator,
-        messageProcessors: Map<String, MessageProcessor>,
+        messageProcessors: Map<String, MessageProcessor<*>>,
         objectMapper: ObjectMapper
     ): MessageIngester {
         val connectionFactory = WebSocketClientFactory(brokerConfig)

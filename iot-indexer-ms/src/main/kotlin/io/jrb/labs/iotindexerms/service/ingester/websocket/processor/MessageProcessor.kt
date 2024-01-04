@@ -26,8 +26,8 @@ package io.jrb.labs.iotindexerms.service.ingester.websocket.processor
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.InboundMessage
 
-interface MessageProcessor {
+interface MessageProcessor<in T> where T: InboundMessage {
 
-    fun processMessage(message: InboundMessage): Message?
+    fun processMessage(message: T): Message?
 
 }
