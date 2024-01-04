@@ -34,6 +34,7 @@ import io.jrb.labs.iotindexerms.service.ingester.websocket.WebSocketMessageInges
 import io.jrb.labs.iotindexerms.service.ingester.websocket.correlator.WebSocketMessageCorrelator
 import io.jrb.labs.iotindexerms.service.ingester.websocket.message.inbound.InboundMessage
 import io.jrb.labs.iotindexerms.service.ingester.websocket.processor.MessageProcessor
+import io.jrb.labs.iotindexerms.service.ingester.websocket.processor.WebSocketMessageProcessorManager
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -54,13 +55,13 @@ class ServiceJavaConfig {
     @Bean
     fun messageHandlers(
         messageBrokersConfig: MessageBrokersConfig,
-        correlator: WebSocketMessageCorrelator,
-        messageProcessors: Map<String, MessageProcessor<*>>,
+        webSocketMessageCorrelator: WebSocketMessageCorrelator,
+        webSocketMessageProcessorManager: WebSocketMessageProcessorManager,
         objectMapper: ObjectMapper
     ): Map<String, MessageIngester> {
         val mqttHandlers = messageBrokersConfig.mqtt.mapValues { createMqttMessageHandler(it.value) }
         val websocketHandlers = messageBrokersConfig.websocket.mapValues {
-            createWebsocketMessageHandler(it.value, correlator, messageProcessors, objectMapper)
+            createWebsocketMessageHandler(it.value, webSocketMessageCorrelator, webSocketMessageProcessorManager, objectMapper)
         }
         return mqttHandlers + websocketHandlers
     }
@@ -72,16 +73,16 @@ class ServiceJavaConfig {
 
     private fun createWebsocketMessageHandler(
         brokerConfig: WebSocketServerConfig,
-        correlator: WebSocketMessageCorrelator,
-        messageProcessors: Map<String, MessageProcessor<*>>,
+        webSocketMessageCorrelator: WebSocketMessageCorrelator,
+        webSocketMessageProcessorManager: WebSocketMessageProcessorManager,
         objectMapper: ObjectMapper
     ): MessageIngester {
         val connectionFactory = WebSocketClientFactory(brokerConfig)
         return WebSocketMessageIngester(
             brokerConfig,
             connectionFactory,
-            correlator,
-            messageProcessors,
+            webSocketMessageCorrelator,
+            webSocketMessageProcessorManager,
             objectMapper
         )
     }
