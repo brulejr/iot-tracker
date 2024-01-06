@@ -36,6 +36,6 @@ data class Message(
 
     val topic: String,
 
-    val payload: String
+    val payload: Any
 
 )
