@@ -10,6 +10,8 @@ server:
   error:
     include-message: always
 
+spring.data.mongodb.uri: mongodb://admin:secret@localhost:27017/iotdata?authSource=admin
+
 management:
   endpoints:
     web:

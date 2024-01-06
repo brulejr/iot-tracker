@@ -21,63 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.model
+package io.jrb.labs.iotindexerms.service.indexer
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
+import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Version
+import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class EntityStateChange(
+@Document("entity")
+data class DeviceEntity(
 
-    @JsonProperty("event_type")
-    val eventType: String,
+    @Id
+    val id: String? = null,
 
-    val data: EntityStateChangeData,
-
-    val origin: String,
-
-    @JsonProperty("time_fired")
-    val timeFired: Instant
-
-)
-
-data class EntityStateChangeData(
-
-    @JsonProperty("old_state")
-    val oldState: EntityState,
-
-    @JsonProperty("new_state")
-    val newState: EntityState
-
-)
-
-data class EntityState(
-
-    @JsonProperty("entity_id")
     val entityId: String,
 
-    val state: String,
+    val state: String? = null,
 
-    val attributes: EntityStateAttributes?,
+    val stateClass: String? = null,
 
-    @JsonProperty("last_changed")
-    val lastChanged: Instant,
+    val unitOfMeasurement: String? = null,
 
-    @JsonProperty("last_updated")
-    val lastUpdated: Instant
+    val deviceClass: String? = null,
 
-)
+    val createdOn: Instant? = null,
 
-data class EntityStateAttributes(
+    val modifiedOn: Instant? = null,
 
-    @JsonProperty("state_class")
-    val stateClass: String?,
-
-    @JsonProperty("unit_of_measurement")
-    val unitOfMeasurement: String?,
-
-    @JsonProperty("device_class")
-    val deviceClass: String?
+    @Version
+    val version: Long? = null
 
 )
