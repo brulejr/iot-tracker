@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class IotListenerMsApplication
+class IotIndexerMsApplication
 
 fun main(args: Array<String>) {
-	runApplication<IotListenerMsApplication>(*args)
+	runApplication<IotIndexerMsApplication>(*args)
 }
