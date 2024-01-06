@@ -23,6 +23,8 @@
  */
 package io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound
 
+import com.fasterxml.jackson.annotation.JsonValue
+
 interface OutboundMessage<out T> where T: OutboundMessage<T> {
 
     val id: Number
@@ -30,16 +32,17 @@ interface OutboundMessage<out T> where T: OutboundMessage<T> {
 
     fun copy(newId: Long): T
 
-    enum class MessageType {
-        auth,
-        get_config,
-        get_panels,
-        get_services,
-        get_states,
-        ping,
-        subscribe_events,
-        subscribe_trigger,
-        unsubscribe_events
+    enum class MessageType(@JsonValue val path: String) {
+        AUTH("auth"),
+        GET_CONFIG("get_config"),
+        GET_DEVICES("config/device_registry/list"),
+        GET_PANELS("get_panels"),
+        GET_SERVICES("get_services"),
+        GET_STATES("get_states"),
+        PING("ping"),
+        SUBSCRIBE_EVENTS("subscribe_events"),
+        SUBSCRIBER_TRIGGER("subscribe_trigger"),
+        UNSUBSCRIBE_EVENTS("unsubscribe_events")
     }
 
 }

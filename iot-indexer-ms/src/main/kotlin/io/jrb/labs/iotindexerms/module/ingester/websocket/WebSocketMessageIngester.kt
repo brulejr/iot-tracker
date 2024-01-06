@@ -32,7 +32,6 @@ import io.jrb.labs.iotindexerms.module.ingester.websocket.correlator.WebSocketMe
 import io.jrb.labs.iotindexerms.module.ingester.websocket.message.ParsedMessage
 import io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound.AuthMessage
 import io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound.GetConfigMessage
-import io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound.GetPanelsMessage
 import io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound.OutboundMessage
 import io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound.PingMessage
 import io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound.SubscribeEventsMessage
@@ -106,7 +105,6 @@ WebSocketMessageIngester(
         authenticate(session)
         sendMessage(session, PingMessage())
         sendMessage(session, GetConfigMessage())
-        sendMessage(session, GetPanelsMessage())
         sendMessage(session, SubscribeEventsMessage(eventType = "state_changed"))
     }
 

@@ -25,7 +25,7 @@ package io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound
 
 data class GetPanelsMessage(
     override val id: Number = 0,
-    override val type: OutboundMessage.MessageType = OutboundMessage.MessageType.get_panels
+    override val type: OutboundMessage.MessageType = OutboundMessage.MessageType.GET_PANELS
 ) : OutboundMessage<GetPanelsMessage> {
     override fun copy(newId: Long): GetPanelsMessage = copy(id = newId)
 }

@@ -23,20 +23,9 @@
  */
 package io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
-data class SubscribeTriggerMessage(
+data class GetDevicesMessage(
     override val id: Number = 0,
-    override val type: OutboundMessage.MessageType = OutboundMessage.MessageType.SUBSCRIBER_TRIGGER,
-    val trigger: Trigger
-) : OutboundMessage<SubscribeTriggerMessage> {
-    override fun copy(newId: Long): SubscribeTriggerMessage = copy(id = newId)
-
-    data class Trigger(
-        val platform: String,
-        @JsonProperty("entity_id") val entityId: String,
-        val from: String,
-        val to: String
-    )
-
+    override val type: OutboundMessage.MessageType = OutboundMessage.MessageType.GET_DEVICES
+) : OutboundMessage<GetDevicesMessage> {
+    override fun copy(newId: Long): GetDevicesMessage = copy(id = newId)
 }

@@ -26,6 +26,6 @@ package io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class AuthMessage(
-    val type: OutboundMessage.MessageType = OutboundMessage.MessageType.auth,
+    val type: OutboundMessage.MessageType = OutboundMessage.MessageType.AUTH,
     @JsonProperty("access_token") val accessToken: String
 )

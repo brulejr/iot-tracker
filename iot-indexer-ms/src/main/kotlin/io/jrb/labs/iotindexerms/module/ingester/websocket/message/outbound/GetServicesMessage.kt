@@ -25,7 +25,7 @@ package io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound
 
 data class GetServicesMessage(
     override val id: Number = 0,
-    override val type: OutboundMessage.MessageType = OutboundMessage.MessageType.get_services
+    override val type: OutboundMessage.MessageType = OutboundMessage.MessageType.GET_SERVICES
 ) : OutboundMessage<GetServicesMessage> {
     override fun copy(newId: Long): GetServicesMessage = copy(id = newId)
 }

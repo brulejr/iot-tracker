@@ -25,7 +25,7 @@ package io.jrb.labs.iotindexerms.module.ingester.websocket.message.outbound
 
 data class UnsubscribeEventsMessage(
     override val id: Number = 0,
-    override val type: OutboundMessage.MessageType = OutboundMessage.MessageType.unsubscribe_events,
+    override val type: OutboundMessage.MessageType = OutboundMessage.MessageType.UNSUBSCRIBE_EVENTS,
     val subscription: Number
 ) : OutboundMessage<UnsubscribeEventsMessage> {
     override fun copy(newId: Long): UnsubscribeEventsMessage = copy(id = newId)
