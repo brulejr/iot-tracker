@@ -29,5 +29,6 @@ import org.springframework.boot.context.properties.bind.ConstructorBinding
 @ConfigurationProperties(prefix = "application.brokers")
 data class MessageBrokersConfig(
     val mqtt: Map<String, MqttBrokerConfig>,
+    val rest: Map<String, RestServerConfig>,
     val websocket: Map<String, WebSocketServerConfig>
 )

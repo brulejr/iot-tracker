@@ -23,18 +23,9 @@
  */
 package io.jrb.labs.iotindexerms.config
 
-data class MqttBrokerConfig(
+data class RestServerConfig(
     val brokerName: String,
-    val broker: String,
-    val qos: Int,
-    val password: String?,
-    val port : Int,
-    val username: String?,
-    val ssl: Boolean,
-    val topic: String?,
-    val injectFilter: String?
-) {
-
-    val tcpUrl get() = "tcp://${broker}:${port}"
-
-}
+    val url: String,
+    val pollRateInMins: Long,
+    val responseClass: String
+)

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Jon Brule <brulejr@gmail.com>
+ * Copyright (c) 2024 Jon Brule <brulejr@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,20 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.common.scheduler
 
-data class MqttBrokerConfig(
-    val brokerName: String,
-    val broker: String,
-    val qos: Int,
-    val password: String?,
-    val port : Int,
-    val username: String?,
-    val ssl: Boolean,
-    val topic: String?,
-    val injectFilter: String?
-) {
+interface RunnableTask : Runnable {
 
-    val tcpUrl get() = "tcp://${broker}:${port}"
+    fun id(): String
 
 }

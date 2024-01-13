@@ -27,6 +27,7 @@ import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.iotindexerms.model.EntityStateChange
 import io.jrb.labs.iotindexerms.model.MessageEvent
+import io.jrb.labs.iotindexerms.model.Post
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +47,8 @@ import java.time.Instant
 @Component
 class MessageIndexer(
     private val eventBus: EventBus,
-    private val deviceEntityRepository: DeviceEntityRepository
+    private val deviceEntityRepository: DeviceEntityRepository,
+    private val postEntityRepository: PostEntityRepository
 ) {
 
     private val log by LoggerDelegate()
@@ -68,7 +70,11 @@ class MessageIndexer(
         val payload = event.data.payload
         return when (payload.javaClass) {
             EntityStateChange::class.java -> index(payload as EntityStateChange)
-            else -> flowOf()
+            Post::class.java -> index(payload as Post)
+            else -> {
+                log.info("Unknown index event - {}", event)
+                flowOf()
+            }
         }
     }
 
@@ -87,6 +93,18 @@ class MessageIndexer(
                 modifiedOn = timestamp
             ) }
             .flatMap { deviceEntityRepository.save(it) }
+            .asFlow()
+    }
+
+    private fun index(post: Post): Flow<Any> {
+        val timestamp = Instant.now()
+        return postEntityRepository.findByPostId(post.id)
+            .switchIfEmpty { Mono.just(PostEntity(postId = post.id, createdOn = timestamp)) }
+            .map { it.copy(
+                title = post.title,
+                modifiedOn = timestamp
+            ) }
+            .flatMap { postEntityRepository.save(it) }
             .asFlow()
     }
 

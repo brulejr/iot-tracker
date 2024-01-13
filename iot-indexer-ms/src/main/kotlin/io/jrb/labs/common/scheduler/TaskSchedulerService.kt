@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Jon Brule <brulejr@gmail.com>
+ * Copyright (c) 2024 Jon Brule <brulejr@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,20 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.common.scheduler
 
-data class MqttBrokerConfig(
-    val brokerName: String,
-    val broker: String,
-    val qos: Int,
-    val password: String?,
-    val port : Int,
-    val username: String?,
-    val ssl: Boolean,
-    val topic: String?,
-    val injectFilter: String?
-) {
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
+import java.time.Duration
+import java.util.concurrent.ScheduledFuture
 
-    val tcpUrl get() = "tcp://${broker}:${port}"
+class TaskSchedulerService: ThreadPoolTaskScheduler() {
+
+    val scheduledTasks: MutableMap<String, ScheduledFuture<Any>> = mutableMapOf()
+
+    fun cancelTask(id: String) {
+        val result = scheduledTasks[id]?.cancel(true)
+        if (result == true) {
+            scheduledTasks.remove(id)
+        }
+    }
+
+    fun scheduleTaskAtFixedRate(id: String, task: RunnableTask, period: Duration) {
+        val future = super.scheduleAtFixedRate(task, period)
+        scheduledTasks.plus(id to future)
+    }
 
 }
