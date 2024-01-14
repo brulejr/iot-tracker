@@ -23,7 +23,6 @@
  */
 package io.jrb.labs.iotindexerms.module.indexer
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.iotindexerms.model.Device
@@ -41,13 +40,13 @@ import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.asFlow
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Instant
 
-@Component
-class MessageIndexer(
+@Service
+class MessageIndexerService(
     private val eventBus: EventBus,
     private val deviceDocumentRepository: DeviceDocumentRepository,
     private val deviceEntityDocumentRepository: DeviceEntityDocumentRepository,

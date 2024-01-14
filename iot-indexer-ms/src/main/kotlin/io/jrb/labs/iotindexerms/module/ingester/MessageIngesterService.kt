@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Service
-class MessageIngestManager(
+class MessageIngesterService(
     private val messageBrokersConfig: MessageBrokersConfig,
     private val messageIngesterManager: MessageIngesterManager,
     private val eventBus: EventBus
