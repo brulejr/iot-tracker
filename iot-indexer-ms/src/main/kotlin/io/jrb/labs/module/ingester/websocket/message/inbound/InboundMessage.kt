@@ -21,24 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.module.ingester.websocket.message.inbound
 
-import io.jrb.labs.common.eventbus.EventBus
-import io.jrb.labs.common.eventbus.EventLogger
-import io.jrb.labs.module.indexer.MessageIndexerJavaConfig
-import io.jrb.labs.module.ingester.MessageIngesterJavaConfig
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
+interface InboundMessage {
 
-@Configuration
-@Import(MessageIndexerJavaConfig::class, MessageIngesterJavaConfig::class)
-class ServiceJavaConfig {
+    val id: Number?
+        get() = null
 
-    @Bean
-    fun eventBus() = EventBus()
+    val type: MessageType
 
-    @Bean
-    fun eventLogger(eventBus: EventBus) = EventLogger(eventBus)
+    enum class MessageType {
+        auth_invalid,
+        auth_ok,
+        auth_required,
+        event,
+        pong,
+        result
+    }
 
 }

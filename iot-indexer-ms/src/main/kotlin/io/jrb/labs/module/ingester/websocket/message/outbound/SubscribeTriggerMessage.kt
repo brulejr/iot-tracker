@@ -21,24 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.module.ingester.websocket.message.outbound
 
-import io.jrb.labs.common.eventbus.EventBus
-import io.jrb.labs.common.eventbus.EventLogger
-import io.jrb.labs.module.indexer.MessageIndexerJavaConfig
-import io.jrb.labs.module.ingester.MessageIngesterJavaConfig
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
+import com.fasterxml.jackson.annotation.JsonProperty
 
-@Configuration
-@Import(MessageIndexerJavaConfig::class, MessageIngesterJavaConfig::class)
-class ServiceJavaConfig {
+data class SubscribeTriggerMessage(
+    override val id: Number = 0,
+    override val type: OutboundMessage.MessageType = OutboundMessage.MessageType.SUBSCRIBER_TRIGGER,
+    val trigger: Trigger
+) : OutboundMessage<SubscribeTriggerMessage> {
+    override fun copy(newId: Long): SubscribeTriggerMessage = copy(id = newId)
 
-    @Bean
-    fun eventBus() = EventBus()
-
-    @Bean
-    fun eventLogger(eventBus: EventBus) = EventLogger(eventBus)
+    data class Trigger(
+        val platform: String,
+        @JsonProperty("entity_id") val entityId: String,
+        val from: String,
+        val to: String
+    )
 
 }

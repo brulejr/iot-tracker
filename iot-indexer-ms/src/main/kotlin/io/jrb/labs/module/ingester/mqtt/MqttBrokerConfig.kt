@@ -21,24 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.module.ingester.mqtt
 
-import io.jrb.labs.common.eventbus.EventBus
-import io.jrb.labs.common.eventbus.EventLogger
-import io.jrb.labs.module.indexer.MessageIndexerJavaConfig
-import io.jrb.labs.module.ingester.MessageIngesterJavaConfig
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
+data class MqttBrokerConfig(
+    val brokerName: String,
+    val broker: String,
+    val qos: Int,
+    val password: String?,
+    val port : Int,
+    val username: String?,
+    val ssl: Boolean,
+    val topic: String?,
+    val injectFilter: String?
+) {
 
-@Configuration
-@Import(MessageIndexerJavaConfig::class, MessageIngesterJavaConfig::class)
-class ServiceJavaConfig {
-
-    @Bean
-    fun eventBus() = EventBus()
-
-    @Bean
-    fun eventLogger(eventBus: EventBus) = EventLogger(eventBus)
+    val tcpUrl get() = "tcp://${broker}:${port}"
 
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Jon Brule <brulejr@gmail.com>
+ * Copyright (c) 2024 Jon Brule <brulejr@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,24 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.module.ingester.websocket.processor
 
-import io.jrb.labs.common.eventbus.EventBus
-import io.jrb.labs.common.eventbus.EventLogger
-import io.jrb.labs.module.indexer.MessageIndexerJavaConfig
-import io.jrb.labs.module.ingester.MessageIngesterJavaConfig
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
+import io.jrb.labs.common.logging.LoggerDelegate
+import io.jrb.labs.iotindexerms.model.Message
+import io.jrb.labs.module.ingester.websocket.message.inbound.InboundMessage
+import org.springframework.stereotype.Service
 
-@Configuration
-@Import(MessageIndexerJavaConfig::class, MessageIngesterJavaConfig::class)
-class ServiceJavaConfig {
+@Service
+class InboundMessageProcessor : MessageProcessor<InboundMessage> {
 
-    @Bean
-    fun eventBus() = EventBus()
+    private val log by LoggerDelegate()
 
-    @Bean
-    fun eventLogger(eventBus: EventBus) = EventLogger(eventBus)
+    override fun processMessage(message: InboundMessage): Message? {
+        log.info("{} :: message={}", message.type, message)
+        return null
+    }
 
 }

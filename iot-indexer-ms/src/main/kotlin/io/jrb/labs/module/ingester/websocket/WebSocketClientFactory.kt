@@ -21,24 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.module.ingester.websocket
 
-import io.jrb.labs.common.eventbus.EventBus
-import io.jrb.labs.common.eventbus.EventLogger
-import io.jrb.labs.module.indexer.MessageIndexerJavaConfig
-import io.jrb.labs.module.ingester.MessageIngesterJavaConfig
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
+import io.jrb.labs.common.logging.LoggerDelegate
+import org.springframework.web.socket.WebSocketHandler
+import org.springframework.web.socket.WebSocketSession
+import org.springframework.web.socket.client.WebSocketClient
+import org.springframework.web.socket.client.standard.StandardWebSocketClient
 
-@Configuration
-@Import(MessageIndexerJavaConfig::class, MessageIngesterJavaConfig::class)
-class ServiceJavaConfig {
+class WebSocketClientFactory(
+    private val webSocketServerConfig: WebSocketServerConfig
+) {
 
-    @Bean
-    fun eventBus() = EventBus()
+    private val log by LoggerDelegate()
 
-    @Bean
-    fun eventLogger(eventBus: EventBus) = EventLogger(eventBus)
+    fun connect(handler: WebSocketHandler): WebSocketSession {
+        val serverUrl: String = webSocketServerConfig.url
+
+        log.info("Connecting to WebSocket server - url={}", serverUrl)
+
+        val client: WebSocketClient = StandardWebSocketClient()
+
+        return client.execute(handler, serverUrl).get()
+    }
 
 }

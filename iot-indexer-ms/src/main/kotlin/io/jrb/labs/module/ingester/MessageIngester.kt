@@ -21,24 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.module.ingester
 
-import io.jrb.labs.common.eventbus.EventBus
-import io.jrb.labs.common.eventbus.EventLogger
-import io.jrb.labs.module.indexer.MessageIndexerJavaConfig
-import io.jrb.labs.module.ingester.MessageIngesterJavaConfig
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
+import io.jrb.labs.iotindexerms.model.Message
+import reactor.core.Disposable
+import reactor.core.publisher.Flux
+import java.util.function.Predicate
 
-@Configuration
-@Import(MessageIndexerJavaConfig::class, MessageIngesterJavaConfig::class)
-class ServiceJavaConfig {
+interface MessageIngester {
 
-    @Bean
-    fun eventBus() = EventBus()
+    fun isRunning(): Boolean
 
-    @Bean
-    fun eventLogger(eventBus: EventBus) = EventLogger(eventBus)
+    fun stream(): Flux<Message>
+
+    fun start()
+
+    fun stop()
+
+    fun subscribe(handler: (Message) -> Unit): Disposable?
+
+    fun subscribe(filter: Predicate<Message>, handler: (Message) -> Unit): Disposable
 
 }

@@ -21,24 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.module.ingester.websocket.message.outbound
 
-import io.jrb.labs.common.eventbus.EventBus
-import io.jrb.labs.common.eventbus.EventLogger
-import io.jrb.labs.module.indexer.MessageIndexerJavaConfig
-import io.jrb.labs.module.ingester.MessageIngesterJavaConfig
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
+import com.fasterxml.jackson.annotation.JsonValue
 
-@Configuration
-@Import(MessageIndexerJavaConfig::class, MessageIngesterJavaConfig::class)
-class ServiceJavaConfig {
+interface OutboundMessage<out T> where T: OutboundMessage<T> {
 
-    @Bean
-    fun eventBus() = EventBus()
+    val id: Number
+    val type: MessageType
 
-    @Bean
-    fun eventLogger(eventBus: EventBus) = EventLogger(eventBus)
+    fun copy(newId: Long): T
+
+    enum class MessageType(@JsonValue val path: String) {
+        AUTH("auth"),
+        GET_CONFIG("get_config"),
+        GET_DEVICES("config/device_registry/list"),
+        GET_PANELS("get_panels"),
+        GET_SERVICES("get_services"),
+        GET_STATES("get_states"),
+        PING("ping"),
+        SUBSCRIBE_EVENTS("subscribe_events"),
+        SUBSCRIBER_TRIGGER("subscribe_trigger"),
+        UNSUBSCRIBE_EVENTS("unsubscribe_events")
+    }
 
 }
