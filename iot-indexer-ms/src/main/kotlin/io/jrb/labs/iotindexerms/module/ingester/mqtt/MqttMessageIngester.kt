@@ -24,7 +24,6 @@
 package io.jrb.labs.iotindexerms.module.ingester.mqtt
 
 import io.jrb.labs.common.logging.LoggerDelegate
-import io.jrb.labs.iotindexerms.config.MqttBrokerConfig
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.model.MessageType
 import io.jrb.labs.iotindexerms.module.ingester.MessageIngester

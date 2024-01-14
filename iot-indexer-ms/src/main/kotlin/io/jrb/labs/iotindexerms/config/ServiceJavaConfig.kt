@@ -28,6 +28,7 @@ import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.eventbus.EventLogger
 import io.jrb.labs.common.scheduler.TaskSchedulerService
 import io.jrb.labs.iotindexerms.module.ingester.MessageIngester
+import io.jrb.labs.iotindexerms.module.ingester.mqtt.MqttBrokerConfig
 import io.jrb.labs.iotindexerms.module.ingester.mqtt.MqttClientFactory
 import io.jrb.labs.iotindexerms.module.ingester.mqtt.MqttMessageIngester
 import io.jrb.labs.iotindexerms.module.ingester.rest.RestMessageIngester
@@ -48,8 +49,7 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 @EnableConfigurationProperties(
-    MessageBrokersConfig::class,
-    MessageRoutingConfig::class
+    MessageBrokersConfig::class
 )
 class ServiceJavaConfig {
 

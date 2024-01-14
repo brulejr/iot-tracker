@@ -24,7 +24,6 @@
 package io.jrb.labs.iotindexerms.module.ingester.mqtt
 
 import io.jrb.labs.common.logging.LoggerDelegate
-import io.jrb.labs.iotindexerms.config.MqttBrokerConfig
 import io.jrb.labs.iotindexerms.module.ingester.MessageIngesterException
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttClientPersistence

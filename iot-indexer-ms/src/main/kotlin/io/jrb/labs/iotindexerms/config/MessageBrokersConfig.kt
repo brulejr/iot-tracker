@@ -23,6 +23,7 @@
  */
 package io.jrb.labs.iotindexerms.config
 
+import io.jrb.labs.iotindexerms.module.ingester.mqtt.MqttBrokerConfig
 import io.jrb.labs.iotindexerms.module.ingester.rest.RestServerConfig
 import io.jrb.labs.iotindexerms.module.ingester.websocket.WebSocketServerConfig
 import org.springframework.boot.context.properties.ConfigurationProperties
