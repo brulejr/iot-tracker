@@ -29,6 +29,9 @@ import io.jrb.labs.iotindexerms.model.Device
 import io.jrb.labs.iotindexerms.model.EntityStateChange
 import io.jrb.labs.iotindexerms.model.MessageEvent
 import io.jrb.labs.iotindexerms.model.Post
+import io.jrb.labs.iotindexerms.module.indexer.device.DeviceIndexer
+import io.jrb.labs.iotindexerms.module.indexer.entityStateChange.EntityStateChangeIndexer
+import io.jrb.labs.iotindexerms.module.indexer.post.PostIndexer
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,18 +42,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.reactive.asFlow
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.switchIfEmpty
-import java.time.Instant
 
 @Service
 class MessageIndexerService(
     private val eventBus: EventBus,
-    private val deviceDocumentRepository: DeviceDocumentRepository,
-    private val deviceEntityDocumentRepository: DeviceEntityDocumentRepository,
-    private val postDocumentRepository: PostDocumentRepository
+    private val deviceIndexer: DeviceIndexer,
+    private val entityStateChangeIndexer: EntityStateChangeIndexer,
+    private val postIndexer: PostIndexer
 ) {
 
     private val log by LoggerDelegate()
@@ -71,60 +70,14 @@ class MessageIndexerService(
     private fun processEvent(event: MessageEvent): Flow<Any> {
         val payload = event.data.payload
         return when (payload.javaClass) {
-            EntityStateChange::class.java -> index(payload as EntityStateChange)
-            Device::class.java -> index(payload as Device)
-            Post::class.java -> index(payload as Post)
+            EntityStateChange::class.java -> entityStateChangeIndexer.index(payload as EntityStateChange)
+            Device::class.java -> deviceIndexer.index(payload as Device)
+            Post::class.java -> postIndexer.index(payload as Post)
             else -> {
-                log.info("Unknown index event - {}", event)
+                log.info("Unknown event - {}", event)
                 flowOf()
             }
         }
-    }
-
-    private fun index(device: Device): Flow<Any> {
-        val timestamp = Instant.now()
-        return deviceDocumentRepository.findByDeviceId(device.deviceId)
-            .switchIfEmpty { Mono.just(DeviceDocument(deviceId = device.deviceId, createdOn = timestamp)) }
-            .map { it.copy(
-                areaId = device.areaId,
-                manufacturer = device.manufacturer,
-                deviceModel = device.deviceModel,
-                deviceName = device.deviceName,
-                entities = device.entities,
-                modifiedOn = timestamp
-            ) }
-            .flatMap { deviceDocumentRepository.save(it) }
-            .asFlow()
-    }
-
-    private fun index(entityStateChange: EntityStateChange): Flow<DeviceEntityDocument> {
-        val oldState = entityStateChange.data.oldState
-        val newState = entityStateChange.data.newState
-        val timestamp = Instant.now()
-        return deviceEntityDocumentRepository.findByEntityId(oldState.entityId)
-            .switchIfEmpty { Mono.just(DeviceEntityDocument(entityId = newState.entityId, createdOn = timestamp)) }
-            .map { it.copy(
-                entityId = newState.entityId,
-                state = newState.state,
-                stateClass = newState.attributes?.stateClass,
-                unitOfMeasurement = newState.attributes?.unitOfMeasurement,
-                deviceClass = newState.attributes?.deviceClass,
-                modifiedOn = timestamp
-            ) }
-            .flatMap { deviceEntityDocumentRepository.save(it) }
-            .asFlow()
-    }
-
-    private fun index(post: Post): Flow<Any> {
-        val timestamp = Instant.now()
-        return postDocumentRepository.findByPostId(post.id)
-            .switchIfEmpty { Mono.just(PostDocument(postId = post.id, createdOn = timestamp)) }
-            .map { it.copy(
-                title = post.title,
-                modifiedOn = timestamp
-            ) }
-            .flatMap { postDocumentRepository.save(it) }
-            .asFlow()
     }
 
 }

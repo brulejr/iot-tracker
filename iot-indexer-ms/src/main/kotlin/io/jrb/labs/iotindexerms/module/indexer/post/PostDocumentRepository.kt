@@ -21,28 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer
+package io.jrb.labs.iotindexerms.module.indexer.post
 
-import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.Version
-import org.springframework.data.mongodb.core.mapping.Document
-import java.time.Instant
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository
+import org.springframework.stereotype.Repository
+import reactor.core.publisher.Mono
 
-@Document("post")
-data class PostDocument(
+@Repository
+interface PostDocumentRepository : ReactiveMongoRepository<PostDocument, String> {
 
-    @Id
-    val id: String? = null,
+    fun findByPostId(postId: Long): Mono<PostDocument>
 
-    val postId: Long,
-
-    val title: String? = null,
-
-    val createdOn: Instant? = null,
-
-    val modifiedOn: Instant? = null,
-
-    @Version
-    val version: Long? = null
-
-)
+}

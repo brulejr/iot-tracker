@@ -21,15 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer
+package io.jrb.labs.iotindexerms.module.indexer.post
 
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository
-import org.springframework.stereotype.Repository
+import io.jrb.labs.iotindexerms.model.Post
+import io.jrb.labs.iotindexerms.module.indexer.MessageIndexer
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.reactive.asFlow
+import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
+import java.time.Instant
 
-@Repository
-interface DeviceDocumentRepository : ReactiveMongoRepository<DeviceDocument, String> {
+@Component
+class PostIndexer(private val postDocumentRepository: PostDocumentRepository) : MessageIndexer<Post> {
 
-    fun findByDeviceId(deviceId: String): Mono<DeviceDocument>
+    override fun index(message: Post): Flow<Any> {
+        val timestamp = Instant.now()
+        return postDocumentRepository.findByPostId(message.id)
+            .switchIfEmpty { Mono.just(PostDocument(postId = message.id, createdOn = timestamp)) }
+            .map { it.copy(
+                title = message.title,
+                modifiedOn = timestamp
+            ) }
+            .flatMap { postDocumentRepository.save(it) }
+            .asFlow()
+    }
 
 }

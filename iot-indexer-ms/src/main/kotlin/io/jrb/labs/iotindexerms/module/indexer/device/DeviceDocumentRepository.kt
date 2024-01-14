@@ -21,41 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer
+package io.jrb.labs.iotindexerms.module.indexer.device
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.Version
-import org.springframework.data.mongodb.core.mapping.Document
-import java.time.Instant
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository
+import org.springframework.stereotype.Repository
+import reactor.core.publisher.Mono
 
-@Document("device")
-data class DeviceDocument(
+@Repository
+interface DeviceDocumentRepository : ReactiveMongoRepository<DeviceDocument, String> {
 
-    @Id
-    val id: String? = null,
+    fun findByDeviceId(deviceId: String): Mono<DeviceDocument>
 
-    @JsonProperty("device_id")
-    val deviceId: String,
-
-    @JsonProperty("area_id")
-    val areaId: String? = null,
-
-    val manufacturer: String? = null,
-
-    @JsonProperty("device_model")
-    val deviceModel: String? = null,
-
-    @JsonProperty("device_name")
-    val deviceName: String? = null,
-
-    val entities: Set<String>? = setOf(),
-
-    val createdOn: Instant? = null,
-
-    val modifiedOn: Instant? = null,
-
-    @Version
-    val version: Long? = null
-
-)
+}

@@ -21,15 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer
+package io.jrb.labs.iotindexerms.module.indexer.entityStateChange
 
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository
-import org.springframework.stereotype.Repository
-import reactor.core.publisher.Mono
+import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Version
+import org.springframework.data.mongodb.core.mapping.Document
+import java.time.Instant
 
-@Repository
-interface PostDocumentRepository : ReactiveMongoRepository<PostDocument, String> {
+@Document("entity")
+data class DeviceEntityDocument(
 
-    fun findByPostId(postId: Long): Mono<PostDocument>
+    @Id
+    val id: String? = null,
 
-}
+    val entityId: String,
+
+    val state: String? = null,
+
+    val stateClass: String? = null,
+
+    val unitOfMeasurement: String? = null,
+
+    val deviceClass: String? = null,
+
+    val createdOn: Instant? = null,
+
+    val modifiedOn: Instant? = null,
+
+    @Version
+    val version: Long? = null
+
+)
