@@ -26,7 +26,6 @@ package io.jrb.labs.iotindexerms.module.ingester
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.eventbus.SystemEvent
 import io.jrb.labs.common.logging.LoggerDelegate
-import io.jrb.labs.iotindexerms.config.MessageBrokersConfig
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.model.MessageEvent
 
@@ -36,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 @Service
 class MessageIngesterService(
-    private val messageBrokersConfig: MessageBrokersConfig,
+    private val messageIngesterConfig: MessageIngesterConfig,
     private val messageIngesterManager: MessageIngesterManager,
     private val eventBus: EventBus
 ) : SmartLifecycle {
@@ -66,7 +65,7 @@ class MessageIngesterService(
 
     private fun processMessage(source: String, message: Message?) {
         if (message != null) {
-            val filter: Regex? = messageBrokersConfig.mqtt[source]?.injectFilter?.toRegex()
+            val filter: Regex? = messageIngesterConfig.mqtt[source]?.injectFilter?.toRegex()
             if ((filter === null) || filter.matches(message.topic)) {
                 eventBus.sendEvent(MessageEvent(source, "message.in", message))
             }

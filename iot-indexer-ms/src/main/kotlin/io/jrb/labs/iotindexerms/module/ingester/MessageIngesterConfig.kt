@@ -21,15 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.iotindexerms.module.ingester
 
 import io.jrb.labs.iotindexerms.module.ingester.mqtt.MqttBrokerConfig
 import io.jrb.labs.iotindexerms.module.ingester.rest.RestServerConfig
 import io.jrb.labs.iotindexerms.module.ingester.websocket.WebSocketServerConfig
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-@ConfigurationProperties(prefix = "application.brokers")
-data class MessageBrokersConfig(
+@ConfigurationProperties(prefix = "application.ingester")
+data class MessageIngesterConfig(
     val mqtt: Map<String, MqttBrokerConfig>,
     val rest: Map<String, RestServerConfig>,
     val websocket: Map<String, WebSocketServerConfig>

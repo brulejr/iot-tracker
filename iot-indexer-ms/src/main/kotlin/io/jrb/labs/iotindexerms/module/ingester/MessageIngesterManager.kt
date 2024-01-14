@@ -26,7 +26,6 @@ package io.jrb.labs.iotindexerms.module.ingester
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.eventbus.SystemEvent
 import io.jrb.labs.common.logging.LoggerDelegate
-import io.jrb.labs.iotindexerms.config.MessageBrokersConfig
 import io.jrb.labs.iotindexerms.model.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +40,7 @@ import java.util.function.Predicate
 
 @Service
 class MessageIngesterManager(
-    private val messageBrokersConfig: MessageBrokersConfig,
+    private val messageIngesterConfig: MessageIngesterConfig,
     private val messageHandlers: Map<String, MessageIngester>,
     private val eventBus: EventBus
 ) : SmartLifecycle {
