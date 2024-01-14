@@ -23,7 +23,7 @@
  */
 package io.jrb.labs.module.indexer.post
 
-import io.jrb.labs.iotindexerms.model.Post
+import io.jrb.labs.module.event.Post
 import io.jrb.labs.module.indexer.MessageIndexer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow

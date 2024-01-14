@@ -23,7 +23,7 @@
  */
 package io.jrb.labs.module.indexer.entityStateChange
 
-import io.jrb.labs.iotindexerms.model.EntityStateChange
+import io.jrb.labs.module.event.EntityStateChange
 import io.jrb.labs.module.indexer.MessageIndexer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow

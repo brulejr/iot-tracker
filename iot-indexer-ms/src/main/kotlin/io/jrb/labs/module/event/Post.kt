@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Jon Brule <brulejr@gmail.com>
+ * Copyright (c) 2024 Jon Brule <brulejr@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,21 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.model
+package io.jrb.labs.module.event
 
-import java.time.Instant
-import java.util.UUID
-
-data class Message(
-
-    val id: UUID = UUID.randomUUID(),
-
-    val timestamp: Instant = Instant.now(),
-
-    val type: MessageType = MessageType.NORMAL,
-
-    val topic: String,
-
-    val payload: Any
-
+data class Post(
+    val id: Long,
+    val title: String
 )

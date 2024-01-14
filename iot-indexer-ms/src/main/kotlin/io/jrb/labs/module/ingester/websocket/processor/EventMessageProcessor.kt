@@ -24,9 +24,9 @@
 package io.jrb.labs.module.ingester.websocket.processor
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.jrb.labs.iotindexerms.model.EntityStateChange
-import io.jrb.labs.iotindexerms.model.Message
-import io.jrb.labs.iotindexerms.model.MessageType
+import io.jrb.labs.module.event.EntityStateChange
+import io.jrb.labs.module.event.Message
+import io.jrb.labs.module.event.MessageType
 import io.jrb.labs.module.ingester.websocket.message.inbound.EventMessage
 import org.springframework.stereotype.Service
 

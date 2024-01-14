@@ -26,8 +26,8 @@ package io.jrb.labs.module.ingester
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.eventbus.SystemEvent
 import io.jrb.labs.common.logging.LoggerDelegate
-import io.jrb.labs.iotindexerms.model.Message
-import io.jrb.labs.iotindexerms.model.MessageEvent
+import io.jrb.labs.module.event.Message
+import io.jrb.labs.module.event.MessageEvent
 
 import org.springframework.context.SmartLifecycle
 import org.springframework.stereotype.Service

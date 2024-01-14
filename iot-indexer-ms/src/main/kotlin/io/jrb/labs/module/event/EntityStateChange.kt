@@ -21,9 +21,63 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.model
+package io.jrb.labs.module.event
 
-data class Post(
-    val id: Long,
-    val title: String
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonProperty
+import java.time.Instant
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class EntityStateChange(
+
+    @JsonProperty("event_type")
+    val eventType: String,
+
+    val data: EntityStateChangeData,
+
+    val origin: String,
+
+    @JsonProperty("time_fired")
+    val timeFired: Instant
+
+)
+
+data class EntityStateChangeData(
+
+    @JsonProperty("old_state")
+    val oldState: EntityState,
+
+    @JsonProperty("new_state")
+    val newState: EntityState
+
+)
+
+data class EntityState(
+
+    @JsonProperty("entity_id")
+    val entityId: String,
+
+    val state: String,
+
+    val attributes: EntityStateAttributes?,
+
+    @JsonProperty("last_changed")
+    val lastChanged: Instant,
+
+    @JsonProperty("last_updated")
+    val lastUpdated: Instant
+
+)
+
+data class EntityStateAttributes(
+
+    @JsonProperty("state_class")
+    val stateClass: String?,
+
+    @JsonProperty("unit_of_measurement")
+    val unitOfMeasurement: String?,
+
+    @JsonProperty("device_class")
+    val deviceClass: String?
+
 )

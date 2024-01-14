@@ -21,63 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.model
+package io.jrb.labs.module.event
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.time.Instant
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class EntityStateChange(
+data class Device(
 
-    @JsonProperty("event_type")
-    val eventType: String,
+    @JsonProperty("device_id")
+    val deviceId: String,
 
-    val data: EntityStateChangeData,
+    @JsonProperty("area_id")
+    val areaId: String?,
 
-    val origin: String,
+    val manufacturer: String?,
 
-    @JsonProperty("time_fired")
-    val timeFired: Instant
+    @JsonProperty("device_model")
+    val deviceModel: String,
 
-)
+    @JsonProperty("device_name")
+    val deviceName: String?,
 
-data class EntityStateChangeData(
-
-    @JsonProperty("old_state")
-    val oldState: EntityState,
-
-    @JsonProperty("new_state")
-    val newState: EntityState
-
-)
-
-data class EntityState(
-
-    @JsonProperty("entity_id")
-    val entityId: String,
-
-    val state: String,
-
-    val attributes: EntityStateAttributes?,
-
-    @JsonProperty("last_changed")
-    val lastChanged: Instant,
-
-    @JsonProperty("last_updated")
-    val lastUpdated: Instant
-
-)
-
-data class EntityStateAttributes(
-
-    @JsonProperty("state_class")
-    val stateClass: String?,
-
-    @JsonProperty("unit_of_measurement")
-    val unitOfMeasurement: String?,
-
-    @JsonProperty("device_class")
-    val deviceClass: String?
+    val entities: Set<String>? = setOf()
 
 )

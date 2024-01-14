@@ -23,7 +23,7 @@
  */
 package io.jrb.labs.module.ingester
 
-import io.jrb.labs.iotindexerms.model.Message
+import io.jrb.labs.module.event.Message
 import reactor.core.Disposable
 import reactor.core.publisher.Flux
 import java.util.function.Predicate

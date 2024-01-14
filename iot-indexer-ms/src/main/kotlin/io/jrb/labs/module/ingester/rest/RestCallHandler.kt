@@ -25,8 +25,8 @@ package io.jrb.labs.module.ingester.rest
 
 import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.common.scheduler.RunnableTask
-import io.jrb.labs.iotindexerms.model.Message
-import io.jrb.labs.iotindexerms.model.MessageType
+import io.jrb.labs.module.event.Message
+import io.jrb.labs.module.event.MessageType
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient

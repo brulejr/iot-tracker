@@ -24,7 +24,7 @@
 package io.jrb.labs.module.ingester.websocket.processor
 
 import io.jrb.labs.common.logging.LoggerDelegate
-import io.jrb.labs.iotindexerms.model.Message
+import io.jrb.labs.module.event.Message
 import io.jrb.labs.module.ingester.websocket.message.inbound.InboundMessage
 import org.springframework.stereotype.Service
 

@@ -26,7 +26,7 @@ package io.jrb.labs.module.ingester
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.eventbus.SystemEvent
 import io.jrb.labs.common.logging.LoggerDelegate
-import io.jrb.labs.iotindexerms.model.Message
+import io.jrb.labs.module.event.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

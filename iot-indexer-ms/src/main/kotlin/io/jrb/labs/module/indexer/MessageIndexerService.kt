@@ -25,10 +25,10 @@ package io.jrb.labs.module.indexer
 
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.logging.LoggerDelegate
-import io.jrb.labs.iotindexerms.model.Device
-import io.jrb.labs.iotindexerms.model.EntityStateChange
-import io.jrb.labs.iotindexerms.model.MessageEvent
-import io.jrb.labs.iotindexerms.model.Post
+import io.jrb.labs.module.event.Device
+import io.jrb.labs.module.event.EntityStateChange
+import io.jrb.labs.module.event.MessageEvent
+import io.jrb.labs.module.event.Post
 import io.jrb.labs.module.indexer.device.DeviceIndexer
 import io.jrb.labs.module.indexer.entityStateChange.EntityStateChangeIndexer
 import io.jrb.labs.module.indexer.post.PostIndexer

@@ -25,7 +25,7 @@ package io.jrb.labs.module.ingester.rest
 
 import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.common.scheduler.TaskSchedulerService
-import io.jrb.labs.iotindexerms.model.Message
+import io.jrb.labs.module.event.Message
 import io.jrb.labs.module.ingester.MessageIngester
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.Disposable

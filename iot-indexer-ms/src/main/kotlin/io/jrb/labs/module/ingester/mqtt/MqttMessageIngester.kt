@@ -24,8 +24,8 @@
 package io.jrb.labs.module.ingester.mqtt
 
 import io.jrb.labs.common.logging.LoggerDelegate
-import io.jrb.labs.iotindexerms.model.Message
-import io.jrb.labs.iotindexerms.model.MessageType
+import io.jrb.labs.module.event.Message
+import io.jrb.labs.module.event.MessageType
 import io.jrb.labs.module.ingester.MessageIngester
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback

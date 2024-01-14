@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Jon Brule <brulejr@gmail.com>
+ * Copyright (c) 2023 Jon Brule <brulejr@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,26 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.model
+package io.jrb.labs.module.event
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import java.time.Instant
+import java.util.UUID
 
-data class Device(
+data class Message(
 
-    @JsonProperty("device_id")
-    val deviceId: String,
+    val id: UUID = UUID.randomUUID(),
 
-    @JsonProperty("area_id")
-    val areaId: String?,
+    val timestamp: Instant = Instant.now(),
 
-    val manufacturer: String?,
+    val type: MessageType = MessageType.NORMAL,
 
-    @JsonProperty("device_model")
-    val deviceModel: String,
+    val topic: String,
 
-    @JsonProperty("device_name")
-    val deviceName: String?,
-
-    val entities: Set<String>? = setOf()
+    val payload: Any
 
 )
