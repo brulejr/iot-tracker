@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Jon Brule <brulejr@gmail.com>
+ * Copyright (c) 2023 Jon Brule <brulejr@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,15 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer
+package io.jrb.labs.iotindexerms.module.ingester.rest
 
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository
-import org.springframework.stereotype.Repository
-import reactor.core.publisher.Mono
+import io.jrb.labs.iotindexerms.module.ingester.rest.MethodType
 
-@Repository
-interface PostEntityRepository : ReactiveMongoRepository<PostEntity, String> {
-
-    fun findByPostId(postId: Long): Mono<PostEntity>
-
-}
+data class RestServerConfig(
+    val brokerName: String,
+    val methodType: MethodType,
+    val url: String,
+    val accessToken: String?,
+    val requestBody: String?,
+    val responseClass: String,
+    val pollRateInMins: Long
+)

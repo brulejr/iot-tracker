@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Jon Brule <brulejr@gmail.com>
+ * Copyright (c) 2024 Jon Brule <brulejr@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,15 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.iotindexerms.module.indexer
 
-import io.jrb.labs.iotindexerms.module.ingester.rest.RestServerConfig
-import io.jrb.labs.iotindexerms.module.ingester.websocket.WebSocketServerConfig
-import org.springframework.boot.context.properties.ConfigurationProperties
+import com.fasterxml.jackson.annotation.JsonProperty
+import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.Version
+import org.springframework.data.mongodb.core.mapping.Document
+import java.time.Instant
 
-@ConfigurationProperties(prefix = "application.brokers")
-data class MessageBrokersConfig(
-    val mqtt: Map<String, MqttBrokerConfig>,
-    val rest: Map<String, RestServerConfig>,
-    val websocket: Map<String, WebSocketServerConfig>
+@Document("device")
+data class DeviceDocument(
+
+    @Id
+    val id: String? = null,
+
+    @JsonProperty("device_id")
+    val deviceId: String,
+
+    @JsonProperty("area_id")
+    val areaId: String? = null,
+
+    val manufacturer: String? = null,
+
+    @JsonProperty("device_model")
+    val deviceModel: String? = null,
+
+    @JsonProperty("device_name")
+    val deviceName: String? = null,
+
+    val entities: Set<String>? = setOf(),
+
+    val createdOn: Instant? = null,
+
+    val modifiedOn: Instant? = null,
+
+    @Version
+    val version: Long? = null
+
 )

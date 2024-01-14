@@ -21,34 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer
+package io.jrb.labs.iotindexerms.model
 
-import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.Version
-import org.springframework.data.mongodb.core.mapping.Document
-import java.time.Instant
+import com.fasterxml.jackson.annotation.JsonProperty
 
-@Document("entity")
-data class DeviceEntity(
+data class Device(
 
-    @Id
-    val id: String? = null,
+    @JsonProperty("device_id")
+    val deviceId: String,
 
-    val entityId: String,
+    @JsonProperty("area_id")
+    val areaId: String?,
 
-    val state: String? = null,
+    val manufacturer: String?,
 
-    val stateClass: String? = null,
+    @JsonProperty("device_model")
+    val deviceModel: String,
 
-    val unitOfMeasurement: String? = null,
+    @JsonProperty("device_name")
+    val deviceName: String?,
 
-    val deviceClass: String? = null,
-
-    val createdOn: Instant? = null,
-
-    val modifiedOn: Instant? = null,
-
-    @Version
-    val version: Long? = null
+    val entities: Set<String>? = setOf()
 
 )

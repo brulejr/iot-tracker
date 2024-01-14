@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Jon Brule <brulejr@gmail.com>
+ * Copyright (c) 2024 Jon Brule <brulejr@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,15 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.iotindexerms.module.indexer
 
-import io.jrb.labs.iotindexerms.module.ingester.rest.RestServerConfig
-import io.jrb.labs.iotindexerms.module.ingester.websocket.WebSocketServerConfig
-import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository
+import org.springframework.stereotype.Repository
+import reactor.core.publisher.Mono
 
-@ConfigurationProperties(prefix = "application.brokers")
-data class MessageBrokersConfig(
-    val mqtt: Map<String, MqttBrokerConfig>,
-    val rest: Map<String, RestServerConfig>,
-    val websocket: Map<String, WebSocketServerConfig>
-)
+@Repository
+interface DeviceDocumentRepository : ReactiveMongoRepository<DeviceDocument, String> {
+
+    fun findByDeviceId(deviceId: String): Mono<DeviceDocument>
+
+}

@@ -24,7 +24,6 @@
 package io.jrb.labs.iotindexerms.module.ingester.websocket
 
 import io.jrb.labs.common.logging.LoggerDelegate
-import io.jrb.labs.iotindexerms.config.WebSocketServerConfig
 import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.client.WebSocketClient

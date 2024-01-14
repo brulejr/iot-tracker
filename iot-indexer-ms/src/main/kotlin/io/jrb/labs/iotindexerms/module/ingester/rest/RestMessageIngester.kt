@@ -25,10 +25,8 @@ package io.jrb.labs.iotindexerms.module.ingester.rest
 
 import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.common.scheduler.TaskSchedulerService
-import io.jrb.labs.iotindexerms.config.RestServerConfig
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.module.ingester.MessageIngester
-import org.eclipse.paho.client.mqttv3.MqttException
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.Disposable
 import reactor.core.publisher.Flux

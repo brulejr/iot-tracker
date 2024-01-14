@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 Jon Brule <brulejr@gmail.com>
+ * Copyright (c) 2023 Jon Brule <brulejr@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,28 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer
+package io.jrb.labs.iotindexerms.module.ingester.websocket
 
-import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.Version
-import org.springframework.data.mongodb.core.mapping.Document
-import java.time.Instant
-
-@Document("post")
-data class PostEntity(
-
-    @Id
-    val id: String? = null,
-
-    val postId: Long,
-
-    val title: String? = null,
-
-    val createdOn: Instant? = null,
-
-    val modifiedOn: Instant? = null,
-
-    @Version
-    val version: Long? = null
-
+data class WebSocketServerConfig(
+    val brokerName: String,
+    val url: String,
+    val accessToken: String
 )

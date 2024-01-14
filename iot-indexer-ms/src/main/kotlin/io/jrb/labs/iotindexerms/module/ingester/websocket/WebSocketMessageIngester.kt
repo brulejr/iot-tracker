@@ -25,7 +25,6 @@ package io.jrb.labs.iotindexerms.module.ingester.websocket
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jrb.labs.common.logging.LoggerDelegate
-import io.jrb.labs.iotindexerms.config.WebSocketServerConfig
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.module.ingester.MessageIngester
 import io.jrb.labs.iotindexerms.module.ingester.websocket.correlator.WebSocketMessageCorrelator

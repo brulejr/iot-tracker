@@ -31,15 +31,20 @@ import io.jrb.labs.iotindexerms.module.ingester.MessageIngester
 import io.jrb.labs.iotindexerms.module.ingester.mqtt.MqttClientFactory
 import io.jrb.labs.iotindexerms.module.ingester.mqtt.MqttMessageIngester
 import io.jrb.labs.iotindexerms.module.ingester.rest.RestMessageIngester
+import io.jrb.labs.iotindexerms.module.ingester.rest.RestServerConfig
 import io.jrb.labs.iotindexerms.module.ingester.websocket.WebSocketClientFactory
 import io.jrb.labs.iotindexerms.module.ingester.websocket.WebSocketMessageIngester
+import io.jrb.labs.iotindexerms.module.ingester.websocket.WebSocketServerConfig
 import io.jrb.labs.iotindexerms.module.ingester.websocket.correlator.WebSocketMessageCorrelator
 import io.jrb.labs.iotindexerms.module.ingester.websocket.processor.WebSocketMessageProcessorManager
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.MediaType
+import org.springframework.http.codec.json.Jackson2JsonDecoder
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.web.reactive.function.client.WebClient
+
 
 @Configuration
 @EnableConfigurationProperties(
@@ -59,7 +64,20 @@ class ServiceJavaConfig {
     fun taskSchedulerService() = TaskSchedulerService()
 
     @Bean
-    fun webClient() = WebClient.create()
+    fun webClient() : WebClient {
+        return WebClient.builder()
+            .codecs { configurer ->
+                val objectMapper = configurer.readers.stream()
+                    .filter { it is Jackson2JsonDecoder}
+                    .map { it as Jackson2JsonDecoder }
+                    .map { it.objectMapper }
+                    .findFirst()
+                    .orElseGet { Jackson2ObjectMapperBuilder.json().build() }
+                val decoder = Jackson2JsonDecoder(objectMapper, MediaType.TEXT_PLAIN)
+                configurer.customCodecs().registerWithDefaultConfig(decoder)
+            }
+            .build()
+    }
 
     @Bean
     fun messageHandlers(

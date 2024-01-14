@@ -21,15 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer
+package io.jrb.labs.iotindexerms.module.ingester.rest
 
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository
-import org.springframework.stereotype.Repository
-import reactor.core.publisher.Mono
-
-@Repository
-interface DeviceEntityRepository : ReactiveMongoRepository<DeviceEntity, String> {
-
-    fun findByEntityId(entityId: String): Mono<DeviceEntity>
-
+enum class MethodType {
+    GET,
+    POST
 }

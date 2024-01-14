@@ -23,8 +23,10 @@
  */
 package io.jrb.labs.iotindexerms.module.indexer
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.logging.LoggerDelegate
+import io.jrb.labs.iotindexerms.model.Device
 import io.jrb.labs.iotindexerms.model.EntityStateChange
 import io.jrb.labs.iotindexerms.model.MessageEvent
 import io.jrb.labs.iotindexerms.model.Post
@@ -47,8 +49,9 @@ import java.time.Instant
 @Component
 class MessageIndexer(
     private val eventBus: EventBus,
-    private val deviceEntityRepository: DeviceEntityRepository,
-    private val postEntityRepository: PostEntityRepository
+    private val deviceDocumentRepository: DeviceDocumentRepository,
+    private val deviceEntityDocumentRepository: DeviceEntityDocumentRepository,
+    private val postDocumentRepository: PostDocumentRepository
 ) {
 
     private val log by LoggerDelegate()
@@ -70,6 +73,7 @@ class MessageIndexer(
         val payload = event.data.payload
         return when (payload.javaClass) {
             EntityStateChange::class.java -> index(payload as EntityStateChange)
+            Device::class.java -> index(payload as Device)
             Post::class.java -> index(payload as Post)
             else -> {
                 log.info("Unknown index event - {}", event)
@@ -78,12 +82,28 @@ class MessageIndexer(
         }
     }
 
-    private fun index(entityStateChange: EntityStateChange): Flow<DeviceEntity> {
+    private fun index(device: Device): Flow<Any> {
+        val timestamp = Instant.now()
+        return deviceDocumentRepository.findByDeviceId(device.deviceId)
+            .switchIfEmpty { Mono.just(DeviceDocument(deviceId = device.deviceId, createdOn = timestamp)) }
+            .map { it.copy(
+                areaId = device.areaId,
+                manufacturer = device.manufacturer,
+                deviceModel = device.deviceModel,
+                deviceName = device.deviceName,
+                entities = device.entities,
+                modifiedOn = timestamp
+            ) }
+            .flatMap { deviceDocumentRepository.save(it) }
+            .asFlow()
+    }
+
+    private fun index(entityStateChange: EntityStateChange): Flow<DeviceEntityDocument> {
         val oldState = entityStateChange.data.oldState
         val newState = entityStateChange.data.newState
         val timestamp = Instant.now()
-        return deviceEntityRepository.findByEntityId(oldState.entityId)
-            .switchIfEmpty { Mono.just(DeviceEntity(entityId = newState.entityId, createdOn = timestamp)) }
+        return deviceEntityDocumentRepository.findByEntityId(oldState.entityId)
+            .switchIfEmpty { Mono.just(DeviceEntityDocument(entityId = newState.entityId, createdOn = timestamp)) }
             .map { it.copy(
                 entityId = newState.entityId,
                 state = newState.state,
@@ -92,19 +112,19 @@ class MessageIndexer(
                 deviceClass = newState.attributes?.deviceClass,
                 modifiedOn = timestamp
             ) }
-            .flatMap { deviceEntityRepository.save(it) }
+            .flatMap { deviceEntityDocumentRepository.save(it) }
             .asFlow()
     }
 
     private fun index(post: Post): Flow<Any> {
         val timestamp = Instant.now()
-        return postEntityRepository.findByPostId(post.id)
-            .switchIfEmpty { Mono.just(PostEntity(postId = post.id, createdOn = timestamp)) }
+        return postDocumentRepository.findByPostId(post.id)
+            .switchIfEmpty { Mono.just(PostDocument(postId = post.id, createdOn = timestamp)) }
             .map { it.copy(
                 title = post.title,
                 modifiedOn = timestamp
             ) }
-            .flatMap { postEntityRepository.save(it) }
+            .flatMap { postDocumentRepository.save(it) }
             .asFlow()
     }
 

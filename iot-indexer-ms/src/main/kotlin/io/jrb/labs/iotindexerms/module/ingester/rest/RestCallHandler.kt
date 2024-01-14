@@ -25,10 +25,12 @@ package io.jrb.labs.iotindexerms.module.ingester.rest
 
 import io.jrb.labs.common.logging.LoggerDelegate
 import io.jrb.labs.common.scheduler.RunnableTask
-import io.jrb.labs.iotindexerms.config.RestServerConfig
 import io.jrb.labs.iotindexerms.model.Message
 import io.jrb.labs.iotindexerms.model.MessageType
+import org.springframework.http.MediaType
+import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Flux
 import reactor.core.publisher.SignalType
 import reactor.core.publisher.Sinks
 
@@ -48,10 +50,11 @@ class RestCallHandler(
         log.debug("RestCallHandler<{}>:: Running", restServerConfig.brokerName)
 
         val responseClass = Class.forName(restServerConfig.responseClass)
-        val response = webClient.get()
-            .uri(restServerConfig.url)
-            .retrieve()
-            .bodyToFlux(responseClass)
+        val handler = when ( restServerConfig.methodType) {
+            MethodType.GET -> buildGet(responseClass)
+            MethodType.POST -> buildPost(responseClass)
+        }
+        val response = handler
             .collectList()
             .block()
 
@@ -62,6 +65,35 @@ class RestCallHandler(
                 false
             }
         }
+    }
+
+    private fun buildGet(responseClass: Class<*>): Flux<out Any> {
+        val requestSpec = webClient.get()
+            .uri(restServerConfig.url)
+            .accept(MediaType.APPLICATION_JSON)
+        if (restServerConfig.accessToken != null) {
+            requestSpec.header("Authorization", "Bearer ${restServerConfig.accessToken}")
+
+        }
+        return requestSpec
+            .retrieve()
+            .bodyToFlux(responseClass)
+    }
+
+    private fun buildPost(responseClass: Class<*>): Flux<out Any> {
+        val requestSpec = webClient.post()
+            .uri(restServerConfig.url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_PLAIN)
+        if (restServerConfig.accessToken != null) {
+            requestSpec.header("Authorization", "Bearer ${restServerConfig.accessToken}")
+        }
+        if (restServerConfig.requestBody != null) {
+            requestSpec.body(BodyInserters.fromValue(restServerConfig.requestBody))
+        }
+        return requestSpec
+            .retrieve()
+            .bodyToFlux(responseClass)
     }
 
 }
