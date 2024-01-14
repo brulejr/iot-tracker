@@ -21,12 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer
+package io.jrb.labs.module.indexer.device
 
-import kotlinx.coroutines.flow.Flow
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository
+import org.springframework.stereotype.Repository
+import reactor.core.publisher.Mono
 
-interface MessageIndexer<T> {
+@Repository
+interface DeviceDocumentRepository : ReactiveMongoRepository<DeviceDocument, String> {
 
-    fun index(message: T): Flow<Any>
+    fun findByDeviceId(deviceId: String): Mono<DeviceDocument>
 
 }

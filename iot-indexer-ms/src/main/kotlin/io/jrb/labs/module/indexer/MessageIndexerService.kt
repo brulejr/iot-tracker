@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer
+package io.jrb.labs.module.indexer
 
 import io.jrb.labs.common.eventbus.EventBus
 import io.jrb.labs.common.logging.LoggerDelegate
@@ -29,9 +29,9 @@ import io.jrb.labs.iotindexerms.model.Device
 import io.jrb.labs.iotindexerms.model.EntityStateChange
 import io.jrb.labs.iotindexerms.model.MessageEvent
 import io.jrb.labs.iotindexerms.model.Post
-import io.jrb.labs.iotindexerms.module.indexer.device.DeviceIndexer
-import io.jrb.labs.iotindexerms.module.indexer.entityStateChange.EntityStateChangeIndexer
-import io.jrb.labs.iotindexerms.module.indexer.post.PostIndexer
+import io.jrb.labs.module.indexer.device.DeviceIndexer
+import io.jrb.labs.module.indexer.entityStateChange.EntityStateChangeIndexer
+import io.jrb.labs.module.indexer.post.PostIndexer
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

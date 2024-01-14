@@ -21,15 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer.device
+package io.jrb.labs.module.indexer.device
 
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository
-import org.springframework.stereotype.Repository
+import io.jrb.labs.iotindexerms.model.Device
+import io.jrb.labs.module.indexer.MessageIndexer
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.reactive.asFlow
+import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
+import java.time.Instant
 
-@Repository
-interface DeviceDocumentRepository : ReactiveMongoRepository<DeviceDocument, String> {
+@Component
+class DeviceIndexer(private val deviceDocumentRepository: DeviceDocumentRepository) : MessageIndexer<Device> {
 
-    fun findByDeviceId(deviceId: String): Mono<DeviceDocument>
+    override fun index(message: Device): Flow<Any> {
+        val timestamp = Instant.now()
+        return deviceDocumentRepository.findByDeviceId(message.deviceId)
+            .switchIfEmpty { Mono.just(DeviceDocument(deviceId = message.deviceId, createdOn = timestamp)) }
+            .map { it.copy(
+                areaId = message.areaId,
+                manufacturer = message.manufacturer,
+                deviceModel = message.deviceModel,
+                deviceName = message.deviceName,
+                entities = message.entities,
+                modifiedOn = timestamp
+            ) }
+            .flatMap { deviceDocumentRepository.save(it) }
+            .asFlow()
+    }
 
 }

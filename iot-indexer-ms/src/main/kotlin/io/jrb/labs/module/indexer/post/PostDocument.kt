@@ -21,35 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer.device
+package io.jrb.labs.module.indexer.post
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Version
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
 
-@Document("device")
-data class DeviceDocument(
+@Document("post")
+data class PostDocument(
 
     @Id
     val id: String? = null,
 
-    @JsonProperty("device_id")
-    val deviceId: String,
+    val postId: Long,
 
-    @JsonProperty("area_id")
-    val areaId: String? = null,
-
-    val manufacturer: String? = null,
-
-    @JsonProperty("device_model")
-    val deviceModel: String? = null,
-
-    @JsonProperty("device_name")
-    val deviceName: String? = null,
-
-    val entities: Set<String>? = setOf(),
+    val title: String? = null,
 
     val createdOn: Instant? = null,
 

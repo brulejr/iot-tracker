@@ -21,34 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer.entityStateChange
+package io.jrb.labs.module.indexer.post
 
-import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.Version
-import org.springframework.data.mongodb.core.mapping.Document
+import io.jrb.labs.iotindexerms.model.Post
+import io.jrb.labs.module.indexer.MessageIndexer
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.reactive.asFlow
+import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Instant
 
-@Document("entity")
-data class DeviceEntityDocument(
+@Component
+class PostIndexer(private val postDocumentRepository: PostDocumentRepository) : MessageIndexer<Post> {
 
-    @Id
-    val id: String? = null,
+    override fun index(message: Post): Flow<Any> {
+        val timestamp = Instant.now()
+        return postDocumentRepository.findByPostId(message.id)
+            .switchIfEmpty { Mono.just(PostDocument(postId = message.id, createdOn = timestamp)) }
+            .map { it.copy(
+                title = message.title,
+                modifiedOn = timestamp
+            ) }
+            .flatMap { postDocumentRepository.save(it) }
+            .asFlow()
+    }
 
-    val entityId: String,
-
-    val state: String? = null,
-
-    val stateClass: String? = null,
-
-    val unitOfMeasurement: String? = null,
-
-    val deviceClass: String? = null,
-
-    val createdOn: Instant? = null,
-
-    val modifiedOn: Instant? = null,
-
-    @Version
-    val version: Long? = null
-
-)
+}

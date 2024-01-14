@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.module.indexer.entityStateChange
+package io.jrb.labs.module.indexer.entityStateChange
 
 import io.jrb.labs.iotindexerms.model.EntityStateChange
-import io.jrb.labs.iotindexerms.module.indexer.MessageIndexer
+import io.jrb.labs.module.indexer.MessageIndexer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import org.springframework.stereotype.Component
@@ -33,7 +33,8 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Instant
 
 @Component
-class EntityStateChangeIndexer(private val deviceEntityDocumentRepository: DeviceEntityDocumentRepository) : MessageIndexer<EntityStateChange> {
+class EntityStateChangeIndexer(private val deviceEntityDocumentRepository: DeviceEntityDocumentRepository) :
+    MessageIndexer<EntityStateChange> {
 
     override fun index(message: EntityStateChange): Flow<Any> {
         val oldState = message.data.oldState

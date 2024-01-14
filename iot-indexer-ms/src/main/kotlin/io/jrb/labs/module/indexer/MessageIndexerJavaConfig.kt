@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Jon Brule <brulejr@gmail.com>
+ * Copyright (c) 2024 Jon Brule <brulejr@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.jrb.labs.iotindexerms.config
+package io.jrb.labs.module.indexer
 
-import io.jrb.labs.common.eventbus.EventBus
-import io.jrb.labs.common.eventbus.EventLogger
-import io.jrb.labs.module.indexer.MessageIndexerJavaConfig
-import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.FilterType
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository
+import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories
 
 @Configuration
-@Import(MessageIndexerJavaConfig::class)
-class ServiceJavaConfig {
-
-    @Bean
-    fun eventBus() = EventBus()
-
-    @Bean
-    fun eventLogger(eventBus: EventBus) = EventLogger(eventBus)
-
+@ComponentScan(
+    basePackages = [ "io.jrb.labs.module.indexer" ],
+    includeFilters = [
+        ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = [ MessageIndexer::class ]),
+        ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = [ ReactiveMongoRepository::class ])
+    ]
+)
+@EnableReactiveMongoRepositories
+class MessageIndexerJavaConfig {
 }
